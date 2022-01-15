@@ -1,5 +1,5 @@
-const fs = require('fs');
 const prompt = require('prompt-sync')();
+
 // Only want the five letter words
 let dict = require('./dictionary.json').filter(e => e.length === 5);
 
@@ -27,8 +27,7 @@ async function getInput() {
   // Guess your answer
   // Enter your word, five letters
   
-  const input = prompt("What is your initial guess? ");
-  return input;
+  return input = prompt("What is your initial guess? ");
 }
 
 async function getResult() {
@@ -37,8 +36,7 @@ async function getResult() {
   // i: included - included and not in the right place
   // e: excluded - excluded and does not occur in the word
 
-  const order = prompt("What is the initial result? ");
-  return order;
+  return order = prompt("What is the initial result? ");
 }
 
 async function filterDict(answer, result) {
@@ -50,7 +48,7 @@ async function filterDict(answer, result) {
 
   r.forEach((v, i) => {
     if(v === 'c') {
-      // This letter index is correct
+      // This letter is correct
       dict = dict.filter(e => e[i] === a[i]);
     }
 
@@ -60,6 +58,7 @@ async function filterDict(answer, result) {
     }
 
     if(v === 'i') {
+      // And this letter appears somewhere in the word 
       dict = dict.filter(e => e.search(a[i]) > 0);
     }
   });
