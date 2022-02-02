@@ -1,22 +1,25 @@
-const prompt = require('prompt-sync')();
+const prompt = require("prompt-sync")();
 
 // Only want the five letter words
-let dict = require('./dictionary.json').filter(e => e.length === 5);
+let dict = require("./dictionary.json").filter((e) => e.length === 5);
 
 // Credit to https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
 
-let turns = 1;  
+const args = process.argv.slice(2);
+
+let turns = 1;
+const maxTurns = args[0] === "u" ? 99999 : 7;
 
 async function recursiveWordleSolve() {
-
-  if (turns === 7) {
+  if (turns === maxTurns) {
     console.log("You Lose!");
     return;
   }
 
   // Print the rules
 
-  console.log(
+  console
+    .log
     /*
       WordleSolve.js
 
@@ -26,19 +29,19 @@ async function recursiveWordleSolve() {
 
       i - included: included and not in the right place
 
-      e - excluded: excluded and does not occurr in the word
+      e - excluded: excluded and does not occurr in the remainder of the word ( a double letter occurance shows as i while one of the two if incorrect is e )
   
       A list of remaining words will be printed to the screen.
 
       Take another guess until you win or lose. 
     */
-  );
+    ();
 
   console.log(`Turn: ${turns}`);
 
   input = await getInput();
 
-  if(input === 'exit') {
+  if (input === "exit") {
     return;
   }
 
@@ -46,11 +49,15 @@ async function recursiveWordleSolve() {
 
   decision = await getResult();
 
+  if (decision === "exit") {
+    return;
+  }
+
   console.log(`\n ${decision} \n`);
 
   await filterDict(input, decision);
 
-  if(dict.length === 1) {
+  if (dict.length === 1) {
     console.log("You Won!");
   } else {
     turns += 1;
@@ -61,49 +68,49 @@ async function recursiveWordleSolve() {
 async function getInput() {
   // Guess your answer
   // Enter your word, five letters
-  
-  return input = prompt("What is your guess? ");
+
+  return (input = prompt("What is your guess? "));
 }
 
 async function getResult() {
   // What is the result
-  // c: correct - included and in the right place
-  // i: included - included and not in the right place
-  // e: excluded - excluded and does not occur in the word
 
-  return order = prompt("What is the result? ");
+  return (order = prompt("What is the result? "));
 }
 
 async function filterDict(answer, result) {
-  const a = String(answer).trim().split('');
-  const r = String(result).trim().split('');
+  const answerLetters = String(answer).trim().split("");
+  const resultLetters = String(result).trim().split("");
 
-  console.log('A:', a);
-  console.log('R:', r);
+  const correctIndexes = resultLetters.reduce(
+    (arr, e, i) => (e == "c" && arr.push(i), arr),
+    []
+  );
 
-  r.forEach((v, i) => {
-    if(v === 'c') {
-      // This letter is correct
-      dict = dict.filter(e => e[i] === a[i]);
-      console.log('FC:', dict)
-    }
+  const excludedIndexes = resultLetters.reduce(
+    (arr, e, i) => (e == "e" && arr.push(i), arr),
+    []
+  );
 
-    if(v === 'e') {
-      // This letter does not appear at all
-      dict = dict.filter(e => e.search(a[i]) < 0);
-      console.log('FE:', dict)
-    }
+  const includedIndexes = resultLetters.reduce(
+    (arr, e, i) => (e == "i" && arr.push(i), arr),
+    []
+  );
 
-    if(v === 'i') {
-      // And this letter appears somewhere in the word but not in this spot
-      dict = dict.filter(e => e.search(a[i]) > 0 && e[i] !== a[i]);
-      console.log('FI:', dict)
-    }
-  });
+  // Filter the dict based on the indicies
 
-  console.log(dict);
+  dict = dict.reduce(
+    (arr, c, i) => (, arr), []);
+
+  // dict = dict.filter(e => e[correctIndexes] === answerLetters[correctIndexes]);
+
+  console.log(resultArray);
+  console.log(resultArray.length);
+
+  // console.log(dict);
   console.log(dict.length);
-};
+
+}
 
 async function main() {
   recursiveWordleSolve();
