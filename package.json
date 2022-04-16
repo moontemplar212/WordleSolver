@@ -1,18 +1,22 @@
 {
   "name": "wordlesolver",
   "version": "1.0.0",
-  "description": "wordle solver using axios and dword",
+  "description": "wordle solver with dictionary",
   "main": "wordle.js",
   "dependencies": {
-    "axios": "^0.24.0",
+    "lodash": "^4.17.21",
     "prompt-sync": "^4.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "^2.6.2"
+  },
   "scripts": {
-    "test": "test"
+    "test": "echo test && exit code 0",
+    "pretty": "npx prettier"
   },
   "keywords": [
-    "wordle"
+    "wordle",
+    "solver"
   ],
   "author": "sdavies",
   "license": "MIT"
