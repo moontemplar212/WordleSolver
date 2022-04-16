@@ -98,41 +98,6 @@ async function filterDict(answer, result) {
 
   console.log(`Dict: ${dict}`);
   console.log(`Dict len: ${dict.length}`);
-
-  // dict = dict.reduce((arr, c, j) => {
-  //   let wordHolder = [];
-    
-  //   const notIncludedLetters = c.split("").map(e => !includedIndices.includes(c.split('').indexOf(e)) && e).filter(e => e);
-
-  //   for(let i = 0; i < res.length; i++) {
-  //     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
-  //     if(resultLetter === "e") {
-  //       console.log(`here 1`);
-  //       arr = arr.filter(e => !e.search(guessLetter) > 0);
-  //     }
-  //     if(resultLetter === "i") {
-  //       if(notIncludedLetters.includes(guessLetter)) {
-  //         console.log(`here 2`);
-  //         continue;
-  //       } else {
-  //         console.log(`here 3`);
-  //         arr.splice(j);
-  //       }        
-  //     }
-  //     if(resultLetter === "c" && c[answerLetterIndex] === guessLetter) {
-  //       console.log(`here 4`);
-  //       wordHolder.push(1);
-  //     }
-  //   }
-  //   if(wordHolder.length != lenCorrectIncluded) {
-  //     console.log(`here 5`);
-  //     arr.splice(j);
-  //   }
-  //   return arr;
-  // }, dict);
-
-  // console.log(`Dict: ${dict}`);
-  // console.log(`Dict len: ${dict.length}`);
 }
 
 async function main() {
