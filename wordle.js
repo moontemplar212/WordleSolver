@@ -1,13 +1,14 @@
 const prompt = require("prompt-sync")();
 const _ = require('lodash');
 
-// Only want the five letter words
+// https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
 let dict = require("./dictionary.json").filter((e) => e.length === 5);
-// Credit to https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
 
 const args = process.argv.slice(2);
 
 let turns = 1;
+
+// unlimited turns set as sufficiently large || standard 6 turns
 const maxTurns = args[0] === "u" ? 99999 : 7;
 
 async function recursiveWordleSolve() {
@@ -46,7 +47,6 @@ async function recursiveWordleSolve() {
 
 async function getInput() {
   // Guess your answer
-  // Enter your word, five letters
   return (input = prompt("What is your guess? "));
 }
 
@@ -55,27 +55,26 @@ async function getResult() {
   return (order = prompt("What is the result? "));
 }
 
-function setCharAt(str,index,chr) {
-  return str.substring(0,index) + chr + str.substring(index+1);
-}
-
 
 async function filterDict(answer, result) {
   const answerLetters = String(answer).trim().split("");
+  
   const resultLetters = String(result).trim().split("");
 
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
-  console.log(res);
   
   for(let i = 0; i < res.length; i++) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
     if(resultLetter === "e") {
+      // remove words where the current letter !== your guessed letter
       dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
     }
     if(resultLetter === "c") {
+      // keep words where the current letter == your guessed letter
       dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
     }
     if(resultLetter === "i") {
+      // keep words where the included letter appears in the remainder of the word
       dict = dict.filter(e => {
         const notIncludedLetters = e.replace(e[answerLetterIndex], '');
         if(notIncludedLetters.includes(guessLetter)) {
@@ -87,11 +86,11 @@ async function filterDict(answer, result) {
   }
 
   console.log(`Dict: ${dict}`);
+  
   console.log(`Dict len: ${dict.length}`);
 }
 
 async function main() {
-  // Print the rules
   console
     .log(
     `
