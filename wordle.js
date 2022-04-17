@@ -6,10 +6,31 @@ let dict = require("./dictionary.json").filter((e) => e.length === 5);
 
 const args = process.argv.slice(2);
 
+let input;
+let result;
+
 let turns = 1;
 
 // unlimited turns set as sufficiently large || standard 6 turns
 const maxTurns = args[0] === "u" ? 99999 : 7;
+
+async function recursiveInput() {
+  try {
+    input = await getInput();
+  } catch (error) {
+    console.error(error);
+    recursiveInput();
+  }
+}
+
+async function rescursiveResult() {
+  try {
+    result = await getResult();
+  } catch (error) {
+    console.error(error);
+    rescursiveResult();
+  }
+}
 
 async function recursiveWordleSolve() {
   if (turns === maxTurns) {
@@ -19,26 +40,19 @@ async function recursiveWordleSolve() {
 
   console.log(`Turn: ${turns}`);
 
-  input = await getInput();
-
-  if (input === "exit") {
-    return;
-  }
-
+  await recursiveInput();
+  
   console.log(`\n ${input} \n`);
 
-  decision = await getResult();
+  await rescursiveResult();
 
-  if (decision === "exit") {
-    return;
-  }
+  console.log(`\n ${result} \n`);
 
-  console.log(`\n ${decision} \n`);
-
-  await filterDict(input, decision);
+  await filterDict(input, result);
 
   if (dict.length === 1) {
     console.log("You Won!");
+    process.exit(0);
   } else {
     turns += 1;
     recursiveWordleSolve();
@@ -47,12 +61,26 @@ async function recursiveWordleSolve() {
 
 async function getInput() {
   // Guess your answer
-  return (input = prompt("What is your guess? "));
+  const input = prompt("What is your guess? ");
+  if (input === "exit") {
+    process.exit(0);
+  }
+  if(input.length !== 5) {
+    throw 'Input length must be equal to five';
+  }
+  return input;
 }
 
 async function getResult() {
   // What is the result
-  return (order = prompt("What is the result? "));
+  const result = prompt("What is the result? ");
+  if (result === "exit") {
+    process.exit(0);
+  }
+  if(result.length !== 5) {
+    throw 'Result length must be equal to five';
+  }
+  return result;
 }
 
 
@@ -96,7 +124,7 @@ async function main() {
     `
       WordleSolve.js
 
-      Enter your 5 letter guess and the decision using:
+      Enter your 5 letter guess and the result using:
 
       c - correct: included and in the right place
 
