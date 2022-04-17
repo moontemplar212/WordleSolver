@@ -3,7 +3,6 @@ const _ = require('lodash');
 
 // Only want the five letter words
 let dict = require("./dictionary.json").filter((e) => e.length === 5);
-
 // Credit to https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
 
 const args = process.argv.slice(2);
@@ -65,29 +64,20 @@ async function filterDict(answer, result) {
   const answerLetters = String(answer).trim().split("");
   const resultLetters = String(result).trim().split("");
 
-  const lenCorrectIncluded = resultLetters.filter(e => e !== "e" && e !== "i").length;
-
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
   console.log(res);
   
-  const includedIndices = resultLetters.map((e, i) => {
-    if(e == "i") {
-      return i;
-    }
-    return;
-  }).filter(Number.isFinite);
-
   for(let i = 0; i < res.length; i++) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
     if(resultLetter === "e") {
-      dict = dict.filter(e => e.search(guessLetter) < 0);
+      dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
     }
     if(resultLetter === "c") {
-      dict = dict.filter(e => e.indexOf(guessLetter) === answerLetterIndex && e[e.indexOf(guessLetter)] === guessLetter)
+      dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
     }
     if(resultLetter === "i") {
       dict = dict.filter(e => {
-        const notIncludedLetters = e.split('').map(p => !includedIndices.includes(e.split('').indexOf(p)) && p).filter(e => e);
+        const notIncludedLetters = e.replace(e[answerLetterIndex], '');
         if(notIncludedLetters.includes(guessLetter)) {
           return e;
         }
