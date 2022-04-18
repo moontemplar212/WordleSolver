@@ -12,7 +12,6 @@ let turns = 1;
 const maxTurns = args[0] === "u" ? 99999 : 7;
 
 async function receiveInput(typeInput, promptInput) {
-  // Guess your answer
   const pInput = prompt(`${promptInput} `);
   if (pInput === "exit") {
     process.exit(0);
@@ -45,7 +44,7 @@ async function recursiveWordleSolve() {
   
   console.log(`\n ${input} \n`);
 
-  result = await recursiveInput("Result", "What is the result?");
+  const result = await recursiveInput("Result", "What is the result?");
 
   console.log(`\n ${result} \n`);
 
