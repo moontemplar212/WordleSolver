@@ -67,7 +67,6 @@ async function filterDict(answer, result) {
   const freq = answerLetters.reduce((acc, e) => (acc[e] = ++acc[e] || 1, acc), {})
 
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
-  console.log(res);
   
   for(let i = 0; i < res.length; i++) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
