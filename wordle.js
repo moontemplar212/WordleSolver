@@ -73,15 +73,15 @@ async function filterDict(answer, result) {
   for(let i = 0; i < res.length; i++) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
     if(resultLetter === "e") {
-      // remove words which contain the guessLetter at that particular place and if freq 1 then whole words
+      // remove words containing guessLetter freq 1 or guessLetter in this place freq > 1
       dict = dict.filter(e => (freq[guessLetter] > 1) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
     }
     if(resultLetter === "c") {
-      // keep words where the current letter == your guessed letter
+      // keep words current letter === guessed letter
       dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
     }
     if(resultLetter === "i") {
-      // keep words where the included letter appears in the remainder of the word
+      // keep words included letter appears in remainder of word
       dict = dict.filter(e => {
         const notIncludedLetters = e.replace(e[answerLetterIndex], '');
         if(notIncludedLetters.includes(guessLetter)) {
@@ -89,7 +89,7 @@ async function filterDict(answer, result) {
         }
         return;       
       });
-      // remove words where the included letter is in this place
+      // remove words included letter in this place
       dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
     }
   }
