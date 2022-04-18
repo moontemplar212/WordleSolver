@@ -1,5 +1,3 @@
-// If letter is included, then words must not contain that letter in that place
-
 const prompt = require("prompt-sync")();
 const _ = require('lodash');
 
