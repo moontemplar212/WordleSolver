@@ -1,4 +1,3 @@
-// How to handle double occurance when one is excluded and one is not?
 // If letter is included, then words must not contain that letter in that place
 
 const prompt = require("prompt-sync")();
@@ -101,7 +100,7 @@ async function filterDict(answer, result) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
     if(resultLetter === "e") {
       // remove words which contain the guessLetter at that particular place and if freq 1 then whole words
-      dict = dict.filter(e => (freq[resultLetter] > 0) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
+      dict = dict.filter(e => (freq[guessLetter] > 1) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
     }
     if(resultLetter === "c") {
       // keep words where the current letter == your guessed letter
@@ -116,6 +115,8 @@ async function filterDict(answer, result) {
         }
         return;       
       });
+      // remove words where the included letter is in this place
+      dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
     }
   }
 
