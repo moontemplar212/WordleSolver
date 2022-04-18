@@ -1,3 +1,6 @@
+// How to handle double occurance when one is excluded and one is not?
+// If letter is included, then words must not contain that letter in that place
+
 const prompt = require("prompt-sync")();
 const _ = require('lodash');
 
@@ -89,13 +92,16 @@ async function filterDict(answer, result) {
   
   const resultLetters = String(result).trim().split("");
 
+  const freq = answerLetters.reduce((acc, e) => (acc[e] = ++acc[e] || 1, acc), {})
+
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
+  console.log(res);
   
   for(let i = 0; i < res.length; i++) {
     const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
     if(resultLetter === "e") {
-      // remove words where the current letter !== your guessed letter
-      dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
+      // remove words which contain the guessLetter at that particular place and if freq 1 then whole words
+      dict = dict.filter(e => (freq[resultLetter] > 0) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
     }
     if(resultLetter === "c") {
       // keep words where the current letter == your guessed letter
@@ -134,7 +140,9 @@ async function main() {
   
       A list of remaining words will be printed to the screen.
 
-      Take another guess until you win or lose. 
+      Take another guess until you win or lose.
+
+      Use 'exit' to quit.
     `
     );
   recursiveWordleSolve();
