@@ -6,29 +6,30 @@ let dict = require("./dictionary.json").filter((e) => e.length === 5);
 
 const args = process.argv.slice(2);
 
-let input;
-let result;
-
 let turns = 1;
 
 // unlimited turns set as sufficiently large || standard 6 turns
 const maxTurns = args[0] === "u" ? 99999 : 7;
 
-async function recursiveInput() {
+async function receiveInput(typeInput, promptInput) {
+  // Guess your answer
+  const pInput = prompt(`${promptInput} `);
+  if (pInput === "exit") {
+    process.exit(0);
+  }
+  if(pInput.length !== 5) {
+    throw `${typeInput} length must be equal to five`;
+  }
+  return pInput;
+}
+
+async function recursiveInput(type, prompt) {
   try {
-    input = await getInput();
+    const value = await receiveInput(type, prompt);
+    return value;
   } catch (error) {
     console.error(error);
     recursiveInput();
-  }
-}
-
-async function rescursiveResult() {
-  try {
-    result = await getResult();
-  } catch (error) {
-    console.error(error);
-    rescursiveResult();
   }
 }
 
@@ -40,11 +41,11 @@ async function recursiveWordleSolve() {
 
   console.log(`Turn: ${turns}`);
 
-  await recursiveInput();
+  const input = await recursiveInput("Input", "What is your guess?");
   
   console.log(`\n ${input} \n`);
 
-  await rescursiveResult();
+  result = await recursiveInput("Result", "What is the result?");
 
   console.log(`\n ${result} \n`);
 
@@ -58,31 +59,6 @@ async function recursiveWordleSolve() {
     recursiveWordleSolve();
   }
 }
-
-async function getInput() {
-  // Guess your answer
-  const input = prompt("What is your guess? ");
-  if (input === "exit") {
-    process.exit(0);
-  }
-  if(input.length !== 5) {
-    throw 'Input length must be equal to five';
-  }
-  return input;
-}
-
-async function getResult() {
-  // What is the result
-  const result = prompt("What is the result? ");
-  if (result === "exit") {
-    process.exit(0);
-  }
-  if(result.length !== 5) {
-    throw 'Result length must be equal to five';
-  }
-  return result;
-}
-
 
 async function filterDict(answer, result) {
   const answerLetters = String(answer).trim().split("");
