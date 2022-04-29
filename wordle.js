@@ -48,6 +48,8 @@ async function recursiveWordleSolve() {
 
   console.log(`\n ${result} \n`);
 
+  turns += 1;
+
   await filterDict(input, result);
 
   if (dict.length === 1) {
@@ -57,7 +59,6 @@ async function recursiveWordleSolve() {
 
     process.exit(0);
   } else {
-    turns += 1;
     recursiveWordleSolve();
   }
 }
