@@ -48,9 +48,9 @@ async function recursiveWordleSolve() {
 
   console.log(`\n ${result} \n`);
 
-  turns += 1;
-
   await filterDict(input, result);
+
+  turns += 1;
 
   if (dict.length === 1) {
     console.log("You Won!");
