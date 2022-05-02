@@ -28,7 +28,7 @@ async function recursiveInput(type, prompt) {
     return value;
   } catch (error) {
     console.error(error);
-    recursiveInput();
+    recursiveInput(type, prompt);
   }
 }
 
