@@ -18,6 +18,10 @@
     "wordle",
     "solver"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/moontemplar212/WordleSolver.git"
+  },
   "author": "sdavies",
   "license": "MIT"
 }

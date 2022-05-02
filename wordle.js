@@ -34,7 +34,7 @@ async function recursiveInput(type, prompt) {
 
 async function recursiveWordleSolve() {
   if (turns === maxTurns) {
-    console.log("You Lose!");
+    console.log("You lose!");
     return;
   }
 
@@ -53,7 +53,7 @@ async function recursiveWordleSolve() {
   turns += 1;
 
   if (dict.length === 1) {
-    console.log("You Won!");
+    console.log("You won!");
 
     console.log(`You took ${turns} turns.`);
 
