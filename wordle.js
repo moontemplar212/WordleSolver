@@ -17,19 +17,20 @@ async function receiveInput(typeInput, promptInput) {
     process.exit(0);
   }
   if(pInput.length !== 5) {
-    throw `${typeInput} length must be equal to five`;
+    throw new Error(`${typeInput} length must be equal to five`);
   }
   return pInput;
 }
 
 async function recursiveInput(type, prompt) {
+  let value;
   try {
-    const value = await receiveInput(type, prompt);
-    return value;
+    value = await receiveInput(type, prompt);
   } catch (error) {
     console.error(error);
     recursiveInput(type, prompt);
   }
+  return value;
 }
 
 async function recursiveWordleSolve() {
@@ -70,6 +71,8 @@ async function filterDict(answer, result) {
 
   const freq = answerLetters.reduce((acc, e) => (acc[e] = ++acc[e] || 1, acc), {})
 
+  console.log(freq)
+
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
   
   for(let i = 0; i < res.length; i++) {
@@ -81,6 +84,12 @@ async function filterDict(answer, result) {
     if(resultLetter === "c") {
       // keep words current letter === guessed letter
       dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
+      // remove words current letter !== guessed letter
+      dict = dict.filter(e => {
+        if (e[answerLetterIndex] !== guessLetter) {
+          dict.splice(e)
+        }
+      });
     }
     if(resultLetter === "i") {
       // keep words included letter appears in remainder of word
