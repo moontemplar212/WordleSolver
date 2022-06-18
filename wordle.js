@@ -27,7 +27,6 @@ async function recursiveInput(type, prompt) {
   try {
     value = await receiveInput(type, prompt);
   } catch (error) {
-    console.error(error);
     recursiveInput(type, prompt);
   }
   return value;
@@ -71,8 +70,6 @@ async function filterDict(answer, result) {
 
   const freq = answerLetters.reduce((acc, e) => (acc[e] = ++acc[e] || 1, acc), {})
 
-  console.log(freq)
-
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
   
   for(let i = 0; i < res.length; i++) {
@@ -85,9 +82,9 @@ async function filterDict(answer, result) {
       // keep words current letter === guessed letter
       dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
       // remove words current letter !== guessed letter
-      dict = dict.filter(e => {
-        if (e[answerLetterIndex] !== guessLetter) {
-          dict.splice(e)
+      dict.forEach((word) => {
+        if(word[answerLetterIndex] !== guessLetter) {
+          dict.splice(word);
         }
       });
     }

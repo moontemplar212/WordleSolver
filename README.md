@@ -2,11 +2,18 @@
 
 ## CLI to help solve wordle
 
-Type 'exit' to quit.
-Input a guess of 5 letters and a result of 5 letters where the result is either 'c, e, i'.
+WordleSolve.js
 
-c - correct: the right letter in the right place
+Enter your 5 letter guess and the result using:
 
-e - excluded: a letter not in the word ( or if a double, not in this place )
+c - correct: included and in the right place
 
-i - included: the right letter in the wrong place
+i - included: included and not in the right place
+
+e - excluded: excluded and does not occurr in the remainder of the word ( a double letter occurance shows as i while one of the two if incorrect is e )
+
+A list of remaining words will be printed to the screen.
+
+Take another guess until you win or lose.
+
+Use 'exit' to quit.
