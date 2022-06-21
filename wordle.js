@@ -6,7 +6,7 @@ let dict = require("./dictionary.json").filter((e) => e.length === 5);
 
 const args = process.argv.slice(2);
 
-let turns = 1;
+let turns = 0;
 
 // unlimited turns set as sufficiently large || standard 6 turns
 const maxTurns = args[0] === "u" ? 99999 : 7;
