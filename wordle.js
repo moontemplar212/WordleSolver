@@ -53,6 +53,10 @@ async function recursiveWordleSolve() {
   turns += 1;
 
   if (dict.length === 1) {
+
+    // Have to enter the winning guess
+    turns += 1;
+
     console.log("You won!");
 
     console.log(`You took ${turns} turns.`);
