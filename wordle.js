@@ -1,15 +1,13 @@
 const prompt = require("prompt-sync")();
 const _ = require('lodash');
 
-// https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
+//Credit to https://raw.githubusercontent.com/davideastmond/wordsolverAPI/master/data/dictionary.json
 let dict = require("./dictionary.json").filter((e) => e.length === 5);
-
-const args = process.argv.slice(2);
 
 let turns = 0;
 
 // unlimited turns set as sufficiently large || standard 6 turns
-const maxTurns = args[0] === "u" ? 99999 : 7;
+const maxTurns = process.argv.slice(2)[0] === "u" ? 99999 : 6;
 
 async function receiveInput(typeInput, promptInput) {
   const pInput = prompt(`${promptInput} `);
@@ -34,8 +32,8 @@ async function recursiveInput(type, prompt) {
 
 async function recursiveWordleSolve() {
   turns += 1;
-  
-  if (turns === maxTurns) {
+
+  if (turns > maxTurns) {
     console.log("You lose!");
     return;
   }
