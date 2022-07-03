@@ -88,13 +88,7 @@ async function filterDict(answer, result) {
     }
     if(resultLetter === "i") {
       // keep words included letter appears in remainder of word
-      dict = dict.filter(e => {
-        const notIncludedLetters = e.replace(e[answerLetterIndex], '');
-        if(notIncludedLetters.includes(guessLetter)) {
-          return e;
-        }
-        return;       
-      });
+      dict = dict.filter(e => e.replace(e[answerLetterIndex], '').includes(guessLetter) && e);
       // remove words included letter in this place
       dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
     }
