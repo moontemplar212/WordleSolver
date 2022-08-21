@@ -123,4 +123,67 @@ async function main() {
   recursiveWordleSolve();
 }
 
-main();
+// main();
+
+function second() {
+  const wordleDict = dict.slice(0, 2315);
+
+  const wordleMap = Array(wordleDict.length * wordleDict.length);
+
+  // Want to work out the possible patterns from each starting word to each endingWord
+  // This relies upon previous guesses. Hard.
+
+  const S = 3
+
+  const N = 5;
+
+  const G = 6;
+
+  let permutations = {};
+
+  // starting word
+  for(let i = 0; i < wordleDict.length; i++) {
+    // ending word
+    for(let j = 0; j < wordleDict.length; j++) {
+      const colourValue = wordleDict[j].split('').reduce((acc, cur, index) => {
+        let colourR = 0;
+        let colourG = 0;
+        let colourB = 0;
+        // Determine the state of the current char
+        // G: The current answer char matches the starting char 
+        if(wordleDict[i][index] === cur) {
+          colourR += 0
+          colourG += 255
+          colourB += 0
+        } else if(wordleDict[i].replace(wordleDict[i][index], '').includes(cur)) {
+          colourR += 255
+          colourG += 255
+          colourB += 0
+        } else if (!wordleDict[i].includes(cur)) {
+          colourR += 0
+          colourG += 0
+          colourB += 0
+        }
+        acc = [ colourR, colourG, colourB ];
+        return acc;
+      }, []);
+      const averageColourValue = colourValue.map(e => e/N);
+      wordleMap[i+j] = averageColourValue;
+    }
+  }
+
+  console.log(wordleMap);
+
+  // for (let i = 0; i < G+1; i++) {
+  //   permutations[i] = Math.pow((Math.pow(S, N) - (N + 1)), i);
+  // }
+
+  // const outcomes = Object.values(permutations).reduce((acc, cur) => {
+  //   return acc += cur
+  // }, 0);
+
+  // console.log(outcomes);
+
+}
+
+second();
