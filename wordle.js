@@ -133,24 +133,31 @@ function second() {
   // Want to work out the possible patterns from each starting word to each endingWord
   // This relies upon previous guesses. Hard.
 
+  // States ( Correct: G, Included: Y, Excluded: B);
   const S = 3
 
+  // Word length
   const N = 5;
 
+  // Number of guesses
   const G = 6;
 
   let permutations = {};
 
+  const loopI = 4;
+  const loopJ = 4;
+
   // starting word
-  for(let i = 0; i < wordleDict.length; i++) {
+  for(let i = 0; i < loopI; i++) {
+    console.log(`SW`, wordleDict[i]);
     // ending word
-    for(let j = 0; j < wordleDict.length; j++) {
+    for(let j = 0; j < loopJ; j++) {
+      console.log(`EW`, wordleDict[j]);
+      let colourR = 0;
+      let colourG = 0;
+      let colourB = 0;
+
       const colourValue = wordleDict[j].split('').reduce((acc, cur, index) => {
-        let colourR = 0;
-        let colourG = 0;
-        let colourB = 0;
-        // Determine the state of the current char
-        // G: The current answer char matches the starting char 
         if(wordleDict[i][index] === cur) {
           colourR += 0
           colourG += 255
@@ -168,11 +175,11 @@ function second() {
         return acc;
       }, []);
       const averageColourValue = colourValue.map(e => e/N);
-      wordleMap[i+j] = averageColourValue;
+      wordleMap[i*loopJ+j] = averageColourValue;
     }
   }
 
-  console.log(wordleMap);
+  console.log(wordleMap.slice(0, loopI*loopJ));
 
   // for (let i = 0; i < G+1; i++) {
   //   permutations[i] = Math.pow((Math.pow(S, N) - (N + 1)), i);
@@ -187,3 +194,19 @@ function second() {
 }
 
 second();
+
+
+// 2D -> 1D
+/**
+ * 
+ * for (int i=0; i < n; i++)
+ { for (int j =0; j< m; j++)
+ b[i*m+j] = a[i][j];
+ } 
+ * 
+ i= k/m; //rounding down
+ j = k -(i*m); 
+
+
+ https://www.ce.jhu.edu/dalrymple/classes/602/Class12.pdf
+ */
