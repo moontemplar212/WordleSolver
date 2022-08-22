@@ -2,6 +2,7 @@
   "name": "wordlesolver",
   "version": "1.1.1",
   "description": "wordle solver with dictionary",
+  "homepage": "http://localhost:3000/",
   "main": "wordle.js",
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -99,25 +100,25 @@
   "license": "MIT",
   "jest": {
     "roots": [
-      "<rootDir>/src"
+      "<rootDir>/webapp/src"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
+      "webapp/src/**/*.{js,jsx,ts,tsx}",
+      "!webapp/src/**/*.d.ts"
     ],
     "setupFiles": [
       "react-app-polyfill/jsdom"
     ],
     "setupFilesAfterEnv": [],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+      "<rootDir>/webapp/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/webapp/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
     ],
     "testEnvironment": "jsdom",
     "transform": {
-      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/webapp/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/webapp/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/webapp/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
