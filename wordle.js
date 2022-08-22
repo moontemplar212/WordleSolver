@@ -144,8 +144,8 @@ function second() {
 
   let permutations = {};
 
-  const loopI = 4;
-  const loopJ = 4;
+  const loopI = 1;
+  const loopJ = 2315*1;
 
   // starting word
   for(let i = 0; i < loopI; i++) {
