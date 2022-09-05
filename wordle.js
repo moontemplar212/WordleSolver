@@ -123,7 +123,7 @@ async function main() {
   recursiveWordleSolve();
 }
 
-// main();
+main();
 
 function second() {
   const wordleDict = dict.slice(0, 2315);
@@ -193,7 +193,7 @@ function second() {
 
 }
 
-second();
+// second();
 
 
 // 2D -> 1D
