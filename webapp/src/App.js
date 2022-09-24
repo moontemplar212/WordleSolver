@@ -27,44 +27,49 @@ const render = () => {
           fkdjalfkhda
         </div>
         <div className="col_middle">
-          <div className="grid_display_parent">
-            <table className="grid_display">
-              <tr className="table_row">
-                <td className="table_div">a</td>
-                <td className="table_div">b</td>
-                <td className="table_div">c</td>
-                <td className="table_div">d</td>
-                <td className="table_div">e</td>
-              </tr>
-              <tr className="table_row">
-                <td className="table_div">f</td>
-                <td className="table_div">g</td>
-                <td className="table_div">h</td>
-                <td className="table_div">i</td>
-                <td className="table_div">j</td>
-              </tr>
-              <tr className="table_row">
-                <td className="table_div">k</td>
-                <td className="table_div">l</td>
-                <td className="table_div">m</td>
-                <td className="table_div">n</td>
-                <td className="table_div">o</td>
-              </tr>
-              <tr className="table_row">
-                <td className="table_div">p</td>
-                <td className="table_div">q</td>
-                <td className="table_div">r</td>
-                <td className="table_div">s</td>
-                <td className="table_div">t</td>
-              </tr>
-              <tr className="table_row">
-                <td className="table_div">u</td>
-                <td className="table_div">v</td>
-                <td className="table_div">w</td>
-                <td className="table_div">x</td>
-                <td className="table_div">y</td>
-              </tr>
-            </table>
+          <div className="grid_display">
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
+            <div className="grid_row">
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+              <div className="grid_col"></div>
+            </div>
           </div>
         </div>
         <div className="col_side">
