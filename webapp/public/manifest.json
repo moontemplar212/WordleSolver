@@ -1,6 +1,6 @@
 {
-  "short_name": "Wordle App",
-  "name": "Wordle Solver",
+  "short_name": "WordleSolver",
+  "name": "A Wordle Solver showing the numerical complexity of possible answers",
   "icons": [
     {
       "src": "favicon.ico",

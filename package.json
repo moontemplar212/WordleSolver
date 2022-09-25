@@ -73,8 +73,30 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "eslint:recommended"
+    ],
+    "globals": {
+      "NodeJS": true
+    },
+    "parser": "@babel/eslint-parser",
+    "overrides": [
+      {
+          "files": ["*.js", "*.jsx"],
+          "rules": {
+              "no-undef": "off",
+              "no-unused-vars": "off"
+          }
+      }
+    ],
+    "rules": {
+      "no-empty": [
+        "error",
+        {
+          "allowEmptyCatch": true
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [

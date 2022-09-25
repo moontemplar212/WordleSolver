@@ -5,12 +5,14 @@
 
 .app {
   display: flex;
+  flex-flow: column;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   text-align: center;
   min-width: 100%;
   min-height: 200px;
+  height: 100vh;
 }
 
 .app_link {
@@ -63,9 +65,10 @@
 
 .main_content_parent {
   display: flex;
-  flex: 1 1 auto;
+  flex-flow: column;
   flex-direction: column;
   align-items: stretch;
+  flex-grow: 1;
 }
 
 .main_content {
@@ -78,7 +81,6 @@
 
 .col_middle {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex: 8;
   flex-direction: column;
@@ -98,6 +100,12 @@
   min-height: 100%;
 }
 
+.spacer {
+  display: block;
+  min-height: 50px;
+  min-width: 100%;
+}
+
 .grid_display {
   display: grid;
   grid-template-rows: repeat(6, 1fr);
@@ -106,7 +114,6 @@
   width: 350px;
   height: 420px;
   min-width: 20%;
-  min-height: 100%;
 }
 
 .grid_row {
@@ -116,5 +123,119 @@
 }
 
 .grid_col {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  outline: 1px solid black;
+  outline-offset: -1px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.keyboard_parent {
+  display: flex;
+  flex-direction: column;
+  flex-flow: column;
+  min-width: 80%;
+  min-height: 150px;
+}
+
+.keyboard {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  row-gap: 5px;
+  height: 100%;
+}
+
+.keyboard_row_1_parent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.keyboard_row_2_parent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.keyboard_row_3_parent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.keyboard_row_1 {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  gap: 5px;
+}
+
+.keyboard_row_2 {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  gap: 5px;
+}
+
+.keyboard_row_3 {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  gap: 5px;
+}
+
+.key {
+  display: flex;
+  flex-direction: column;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  outline: 1px solid black;
+  outline-offset: -1px;
+  width: 80px;
+  min-height: 100%;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.key_space {
+  display: flex;
+  flex-direction: column;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  outline: 1px solid black;
+  outline-offset: -1px;
+  width: 80px;
+  min-height: 100%;
+}
+
+.key_back {
+  display: flex;
+  flex-direction: column;
+  flex-flow: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  outline: 1px solid black;
+  outline-offset: -1px;
+  width: 80px;
+  min-height: 100%;
 }
