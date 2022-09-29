@@ -1,5 +1,33 @@
 import './App.css';
 
+/**
+ * Wordle combination counts
+ * 
+ * N: Number of letters in a row
+ * S: Number of states of each letter
+ * R: Number of rows
+ * I: Number of incorrect guesses
+ * D: Number of disallowed guesses
+ * W: Number of winning guesses, always 1
+ * G: Total guesses
+ * P: All possible guesses
+ * 
+ */
+
+let N, S, R, I, D, W = 1, G;
+
+const calculateCombinations = (S, N, R) => {
+  P = Math.pow(S, N*R);
+  D = (N > 1) ? N : 0;
+  I = Math.pow(Math.pow(S, N) - N + 1, R);
+  G = I + D + W;
+  
+  console.log(`P`, P);
+  console.log(`D`, D);
+  console.log(`I`, I);
+  console.log(`G`, G);
+}
+
 const render = () => {
   return <div className="app">
     <div className="header_parent">
