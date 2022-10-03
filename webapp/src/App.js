@@ -1,9 +1,10 @@
 import './App.css';
+// import './components/inputs/textInput';
 
 /**
  * Wordle combination counts
  * 
- * N: Number of letters in a row
+ * L: Length of words in a row ( number of letters )
  * S: Number of states of each letter
  * R: Number of rows
  * I: Number of incorrect guesses
@@ -14,19 +15,21 @@ import './App.css';
  * 
  */
 
-let N, S, R, I, D, W = 1, G;
+const L = 5, S = 3, R = 6, W = 1;
 
-const calculateCombinations = (S, N, R) => {
-  P = Math.pow(S, N*R);
-  D = (N > 1) ? N : 0;
-  I = Math.pow(Math.pow(S, N) - N + 1, R);
-  G = I + D + W;
-  
-  console.log(`P`, P);
-  console.log(`D`, D);
-  console.log(`I`, I);
-  console.log(`G`, G);
-}
+let I, D, G, P;
+
+P = Math.pow(S, L*R);
+I = Math.pow(Math.pow(S, L) - L + 1, R);
+G = I + W;
+D = P - G;
+
+//  const calculateCombinations = (S, L, R) => {
+//    P = Math.pow(S, L*R);
+//    D = (L > 1) ? L : 0;
+//    I = Math.pow(Math.pow(S, L) - L + 1, R);
+//    G = I + D + W;   
+//  }
 
 const render = () => {
   return <div className="app">
@@ -46,13 +49,38 @@ const render = () => {
           <hr className="line_break"></hr>
         </div>
       </header>
-      <div className="nav_parent">
-      </div>
+      <div className="nav_parent"></div>
     </div>
     <div className="main_content_parent">
       <div className="main_content">
         <div className="col_side">
-          col left
+          <div className='spacer'>
+            Combinations 
+          </div>
+          <div className='info'>
+            Length: {L}
+          </div>
+          <div className='info'>
+            Rows: {R}
+          </div>
+          <div className='info'>
+            States: {S}
+          </div>
+          <div className='info'>
+            Possible: {P}
+          </div>
+          <div className='info'>
+            Guesses: {G}
+          </div>
+          <div className='info'>
+            Incorrect: {I}
+          </div>
+          <div className='info'>
+            Disallowed: {D}
+          </div>
+          <div className='info'>
+            Winning: {W}
+          </div>
         </div>
         <div className="col_middle">
           <div className="spacer"></div>
@@ -147,7 +175,8 @@ const render = () => {
         </div>
         </div>
         <div className="col_side">
-          col right
+          <div className='spacer'>Guess History</div>
+          <div></div>
         </div>
       </div>
     </div>
