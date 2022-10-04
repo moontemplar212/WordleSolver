@@ -1,5 +1,6 @@
 import './App.css';
-// import './components/inputs/textInput';
+import { TextInput } from './components/inputs/textInput/textInputComponent';
+import { TextDisplay } from './components/displays/textDisplay/textDisplayComponent';
 
 /**
  * Wordle combination counts
@@ -15,21 +16,14 @@ import './App.css';
  * 
  */
 
-const L = 5, S = 3, R = 6, W = 1;
+const L = 5, S = 3, R = 2, W = 1;
 
 let I, D, G, P;
 
 P = Math.pow(S, L*R);
-I = Math.pow(Math.pow(S, L) - L + 1, R);
+I = Math.pow(Math.pow(S, L) - (L + 1), R);
 G = I + W;
 D = P - G;
-
-//  const calculateCombinations = (S, L, R) => {
-//    P = Math.pow(S, L*R);
-//    D = (L > 1) ? L : 0;
-//    I = Math.pow(Math.pow(S, L) - L + 1, R);
-//    G = I + D + W;   
-//  }
 
 const render = () => {
   return <div className="app">
@@ -58,28 +52,36 @@ const render = () => {
             Combinations 
           </div>
           <div className='info'>
-            Length: {L}
+            <TextInput name="length" length="10">{L}</TextInput>
           </div>
           <div className='info'>
-            Rows: {R}
+            <TextInput name="rows" length="1">{R}</TextInput>
           </div>
           <div className='info'>
-            States: {S}
+            <TextInput name="states" length="1">{S}</TextInput>
           </div>
           <div className='info'>
-            Possible: {P}
+            <TextDisplay name="possible">{P}</TextDisplay>
           </div>
           <div className='info'>
-            Guesses: {G}
+            <TextDisplay name="guesses">{G}</TextDisplay>
           </div>
           <div className='info'>
-            Incorrect: {I}
+            <TextDisplay name="incorrect">{I}</TextDisplay>
           </div>
           <div className='info'>
-            Disallowed: {D}
+            {/**
+             * 5 * XXXXI followed by 2nd row all possible = 5 * 237 = 1185
+             * All possible 1st row followed by 5 * XXXXI = 5 * 237 = 1185
+             *                                                      = 2370
+             * 509: 
+             *                                                      ------
+             *                                                      = 2879
+             */}
+            <TextDisplay name="disallowed">{D}</TextDisplay>
           </div>
           <div className='info'>
-            Winning: {W}
+            <TextDisplay name="winning">{W}</TextDisplay>
           </div>
         </div>
         <div className="col_middle">

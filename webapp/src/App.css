@@ -1,7 +1,7 @@
-* { 
+/* * { 
   outline: 1px solid red;
   outline-offset: -1px;
-}
+} */
 
 .app {
   display: flex;
@@ -115,6 +115,7 @@
   align-items: center;
   box-sizing: border-box;
   padding-left: 10px;
+  padding-right: 10px;
   min-height: 50px;
   min-width: 100%;
 }
