@@ -1,9 +1,32 @@
 import './App.css';
 import { TextInput } from './components/inputs/textInput/textInputComponent';
 import { TextDisplay } from './components/displays/textDisplay/textDisplayComponent';
-import { useState, useEffect } from 'react';
+import { GridDisplay } from './components/displays/gridDisplay/gridDisplayComponent';
 
 const render = () => {
+  /**
+   * Wordle combination counts
+   * 
+   * L: Length of words in a row ( number of letters )
+   * S: Number of states of each letter
+   * R: Number of rows
+   * I: Number of incorrect guesses
+   * D: Number of disallowed guesses
+   * W: Number of winning guesses, always 1
+   * G: Total guesses
+   * P: All possible guesses
+   * 
+   */
+
+   const L = 5, S = 3, R = 2, W = 1;
+
+   let I, D, G, P;
+ 
+   P = Math.pow(S, L*R);
+   I = Math.pow(Math.pow(S, L) - (L + 1), R);
+   G = I + W;
+   D = P - G;
+
   return <div className="app">
     <div className="header_parent">
       <div className="nav_parent">
@@ -30,7 +53,7 @@ const render = () => {
             Combinations 
           </div>
           <div className='info'>
-            <TextInput name="length" length="10">{L}</TextInput>
+            <TextInput name="length" length="1">{L}</TextInput>
           </div>
           <div className='info'>
             <TextInput name="rows" length="1">{R}</TextInput>
@@ -64,7 +87,7 @@ const render = () => {
         </div>
         <div className="col_middle">
           <div className="spacer"></div>
-          <div className="grid_display" onKeyDown={onKeyDownHandler}>
+          <GridDisplay>
             <div className="grid_row">
               <div className="grid_col">a</div>
               <div className="grid_col">b</div>
@@ -107,7 +130,7 @@ const render = () => {
               <div className="grid_col">j</div>
               <div className="grid_col">n</div>
             </div>
-          </div>
+          </GridDisplay>
           <div className="spacer"></div>
           <div className="keyboard_parent">
             <div className="keyboard">
@@ -164,59 +187,6 @@ const render = () => {
 }
 
 function App() {
-  /**
-   * Wordle combination counts
-   * 
-   * L: Length of words in a row ( number of letters )
-   * S: Number of states of each letter
-   * R: Number of rows
-   * I: Number of incorrect guesses
-   * D: Number of disallowed guesses
-   * W: Number of winning guesses, always 1
-   * G: Total guesses
-   * P: All possible guesses
-   * 
-   */
-
-  const L = 5, S = 3, R = 2, W = 1;
-
-  let I, D, G, P;
-
-  P = Math.pow(S, L*R);
-  I = Math.pow(Math.pow(S, L) - (L + 1), R);
-  G = I + W;
-  D = P - G;
-
-  const [ displayTextArray, setDisplayTextArray ] = useState(Array.apply(null, L * R));
-
-  /**
-   * I have a display grid with L * R letters => an array L * R long
-   * 
-   * When a keyEvent happens, then I want to push that keyValue to the first position that is null
-   * 
-   * And render the array values into each child in order
-   * 
-   * If a backspace keyEvent is fired then delete the last non null value from the Array
-   * 
-   * 
-   */
-
-  // keyDown
-  const onKeyDownHandler = (e) => {
-    if(e.key === 'Backspace') {
-      setDisplayTextArray( oldArray => [])   
-    }
-    // if(e.key === 'Enter') {
-    //   validateGame();
-    // }
-    const keyValue = e.target.value;
-    setDisplayText(oldValue => [...oldValue, ...newValue ]);
-  }
-
-  useEffect(() => {
-    setDisplayTextArray( oldArray => [ ...oldArray, ...newValue ] );
-  }, oldArray)
-
   return render();
 }
 

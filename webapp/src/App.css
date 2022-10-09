@@ -128,16 +128,6 @@
   min-width: 100%;
 }
 
-.grid_display {
-  display: grid;
-  grid-template-rows: repeat(6, 1fr);
-  box-sizing: border-box;
-  row-gap: 5px;
-  width: 350px;
-  height: 420px;
-  min-width: 20%;
-}
-
 .grid_row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
