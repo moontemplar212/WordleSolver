@@ -97,6 +97,12 @@
   min-height: 100%;
   border-left: 1px solid black;
   border-right: 1px solid black;
+  outline: none;
+}
+
+.col_middle:focus-within {
+  outline: 2px solid yellow;
+  outline-offset: -2px;
 }
 
 .col_side {
@@ -107,6 +113,12 @@
   align-items: stretch;
   min-width: 10%;
   min-height: 100%;
+}
+
+.history_list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
 
 .info {

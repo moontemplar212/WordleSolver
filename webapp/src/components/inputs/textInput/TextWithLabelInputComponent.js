@@ -1,7 +1,7 @@
 import '../../Components.css';
-import { useText } from '../../hooks/textHook';
+import { useText } from '../../hooks';
 
-export const TextInput = (props) => {
+export const TextInput = props => {
   const [ text , setText ] = useText(props.children);
   const labelName = `${String(props?.name)[0].toUpperCase()}${String(props?.name).slice(1)}: `;
   const length = parseInt(props?.length) ?? 1;

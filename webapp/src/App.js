@@ -1,31 +1,59 @@
 import './App.css';
-import { TextInput } from './components/inputs/textInput/textInputComponent';
-import { TextDisplay } from './components/displays/textDisplay/textDisplayComponent';
-import { GridDisplay } from './components/displays/gridDisplay/gridDisplayComponent';
+import { useState } from 'react'; 
+import { TextInput } from './components/inputs/textInput/TextWithLabelInputComponent';
+import { TextDisplay } from './components/displays/textDisplay/TextWithLabelDisplayComponent';
+import { ArrayTextDisplay } from './components/displays/textDisplay/ArrayWithTextDisplayComponent';
+import { GridDisplay } from './components/displays/gridDisplay/GridDisplayComponent';
 
 const render = () => {
-  /**
-   * Wordle combination counts
-   * 
-   * L: Length of words in a row ( number of letters )
-   * S: Number of states of each letter
-   * R: Number of rows
-   * I: Number of incorrect guesses
-   * D: Number of disallowed guesses
-   * W: Number of winning guesses, always 1
-   * G: Total guesses
-   * P: All possible guesses
-   * 
-   */
+  const L = 5, S = 3, R = 2, W = 1;
 
-   const L = 5, S = 3, R = 2, W = 1;
+  /** USE HOOKS!!!!! */
 
-   let I, D, G, P;
- 
-   P = Math.pow(S, L*R);
-   I = Math.pow(Math.pow(S, L) - (L + 1), R);
-   G = I + W;
-   D = P - G;
+  const [ length, setLength ] = useState(L);
+
+  const history = [];
+
+
+
+  let I, D, G, P;
+
+  P = Math.pow(S, L * R);
+  I = Math.pow(Math.pow(S, L) - (L + 1), R);
+  G = I + W;
+  D = P - G;
+
+  let displayTextArray = Array.apply(null, Array(L * R));
+
+  const OnKeyDownHandler = (e) => {
+    e.preventDefault();
+
+    console.log(`Key`, e.key);
+
+    const updateDisplayText = (newValue) => {
+      if (displayTextArray.includes(undefined)) {
+        displayTextArray[displayTextArray.indexOf(undefined)] = newValue
+      } else {
+        displayTextArray.push(newValue);
+      }
+      return displayTextArray;
+    };
+
+    const removeDisplayText = () => {
+      displayTextArray.pop();
+      return displayTextArray
+    };
+
+    if (e.key === 'Backspace') {
+      removeDisplayText();
+    } else if (e.key === 'Enter') {
+      // TODO
+    } else if (e.key) {
+      history.push(e.key);
+      updateDisplayText(e.key);
+    }
+    console.log(`DTA`, displayTextArray);
+  }
 
   return <div className="app">
     <div className="header_parent">
@@ -50,7 +78,7 @@ const render = () => {
       <div className="main_content">
         <div className="col_side">
           <div className='spacer'>
-            Combinations 
+            Combinations
           </div>
           <div className='info'>
             <TextInput name="length" length="1">{L}</TextInput>
@@ -71,36 +99,28 @@ const render = () => {
             <TextDisplay name="incorrect">{I}</TextDisplay>
           </div>
           <div className='info'>
-            {/**
-             * 5 * XXXXI followed by 2nd row all possible = 5 * ( 237 + 1 ) = 1190
-             * All possible 1st row followed by 5 * XXXXI = 5 * ( 237 + 1 ) = 1190
-             *                                                              = 2380
-             * 499: 
-             *                                                              ------
-             *                                                              = 2879
-             */}
             <TextDisplay name="disallowed">{D}</TextDisplay>
           </div>
           <div className='info'>
             <TextDisplay name="winning">{W}</TextDisplay>
           </div>
         </div>
-        <div className="col_middle">
+        <div className="col_middle" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
           <div className="spacer"></div>
           <GridDisplay>
             <div className="grid_row">
-              <div className="grid_col">a</div>
-              <div className="grid_col">b</div>
-              <div className="grid_col">c</div>
-              <div className="grid_col">d</div>
-              <div className="grid_col">e</div>
+              <div className="grid_col">{displayTextArray[0]}</div>
+              <div className="grid_col">{displayTextArray[1]}</div>
+              <div className="grid_col">{displayTextArray[2]}</div>
+              <div className="grid_col">{displayTextArray[3]}</div>
+              <div className="grid_col">{displayTextArray[4]}</div>
             </div>
             <div className="grid_row">
-              <div className="grid_col">f</div>
-              <div className="grid_col">g</div>
-              <div className="grid_col">h</div>
-              <div className="grid_col">i</div>
-              <div className="grid_col">j</div>
+              <div className="grid_col">{displayTextArray[5]}</div>
+              <div className="grid_col">{displayTextArray[6]}</div>
+              <div className="grid_col">{displayTextArray[7]}</div>
+              <div className="grid_col">{displayTextArray[8]}</div>
+              <div className="grid_col">{displayTextArray[9]}</div>
             </div>
             <div className="grid_row">
               <div className="grid_col">q</div>
@@ -175,11 +195,11 @@ const render = () => {
                 </div>
               </div>
             </div>
-        </div>
+          </div>
         </div>
         <div className="col_side">
           <div className='spacer'>Guess History</div>
-          <div></div>
+          <ArrayTextDisplay className='history_list'>{history}</ArrayTextDisplay>
         </div>
       </div>
     </div>
