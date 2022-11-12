@@ -1,55 +1,95 @@
 import './App.css';
-import { useState } from 'react'; 
+import React from 'react';
+import { useEffect, useState } from 'react'; 
 import { TextInput } from './components/inputs/textInput/TextWithLabelInputComponent';
 import { TextDisplay } from './components/displays/textDisplay/TextWithLabelDisplayComponent';
-import { ArrayTextDisplay } from './components/displays/textDisplay/ArrayWithTextDisplayComponent';
 import { GridDisplay } from './components/displays/gridDisplay/GridDisplayComponent';
 
-const render = () => {
-  const L = 5, S = 3, R = 2, W = 1;
+const Render = () => {
+  let [ lengthValue, setLengthValue ] = useState(5);
+  let [ statesValue, setStatesValue ] = useState(3);
+  let [ rowsValue, setRowsValue ] = useState(6);
+  let [ winning ] = useState(1);
+  let [ possibleValue, setPossible ] = useState(Math.pow(statesValue, lengthValue * rowsValue));
+  let [ incorrect, setIncorrect ] = useState(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
+  let [ guesses, setGuesses ] = useState(incorrect + winning);
+  let [ disallowed, setDisallowed ] = useState(possibleValue - guesses);
+  let [ displayTextArray, setDisplayTextArray ] = useState([]);
+  
+  let gridDisplayChild = (lengthValue, rowsValue) => {
+    let rows = [];
+    let cols = [];
+    
+    for (let j = 0; j < lengthValue; j++) {
+      let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col'});
+      cols.push(col);
+    }
+    
+    for (let i = 0; i < rowsValue; i++) {
+      let row = React.createElement('div', { key: `row_${i}`, className: 'grid_row'}, cols);
+      rows.push(row);
+    }
+    
+    return rows;
+  }
 
-  /** USE HOOKS!!!!! */
+  useEffect(() => {
+    gridDisplayChild = () => {
+      let rows = [];
+      let cols = [];
+      
+      for (let j = 0; j < lengthValue; j++) {
+        let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col'});
+        cols.push(col);
+      }
+      
+      for (let i = 0; i < lengthValue; i++) {
+        let row = React.createElement('div', { key: `row_${i}`, className: 'grid_row'}, cols);
+        rows.push(row);
+      }
+      
+      return rows;
+    }
 
-  const [ length, setLength ] = useState(L);
+    return gridDisplayChild;
+  }, [lengthValue, rowsValue]);
 
-  const history = [];
+  
 
+  const lengthInput = <TextInput name="length" length="1">{lengthValue}</TextInput>;
 
+  useEffect(() => {
+    setPossible(Math.pow(statesValue, lengthValue * rowsValue));
+  }, [lengthValue, rowsValue, statesValue]);
 
-  let I, D, G, P;
+  useEffect(() => {
+    setIncorrect(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
+  }, [lengthValue, rowsValue, statesValue]);
 
-  P = Math.pow(S, L * R);
-  I = Math.pow(Math.pow(S, L) - (L + 1), R);
-  G = I + W;
-  D = P - G;
+  useEffect(() => {
+    setGuesses(incorrect + winning);
+  }, [incorrect, winning]);
 
-  let displayTextArray = Array.apply(null, Array(L * R));
+  useEffect(() => {
+    setDisallowed(possibleValue - guesses);
+  }, [possibleValue, guesses]);
 
   const OnKeyDownHandler = (e) => {
     e.preventDefault();
 
     console.log(`Key`, e.key);
 
-    const updateDisplayText = (newValue) => {
-      if (displayTextArray.includes(undefined)) {
-        displayTextArray[displayTextArray.indexOf(undefined)] = newValue
-      } else {
-        displayTextArray.push(newValue);
-      }
-      return displayTextArray;
-    };
+    const updateDisplayText = (newValue) => (displayTextArray.includes(undefined)) ?
+        displayTextArray[displayTextArray.indexOf(undefined)] = newValue :
+        displayTextArray.push(newValue)
 
-    const removeDisplayText = () => {
-      displayTextArray.pop();
-      return displayTextArray
-    };
+    const removeDisplayText = () => displayTextArray.pop();
 
     if (e.key === 'Backspace') {
       removeDisplayText();
     } else if (e.key === 'Enter') {
-      // TODO
+      // TODO 
     } else if (e.key) {
-      history.push(e.key);
       updateDisplayText(e.key);
     }
     console.log(`DTA`, displayTextArray);
@@ -81,75 +121,34 @@ const render = () => {
             Combinations
           </div>
           <div className='info'>
-            <TextInput name="length" length="1">{L}</TextInput>
+            {lengthInput}
           </div>
           <div className='info'>
-            <TextInput name="rows" length="1">{R}</TextInput>
+            <TextInput name="rows" length="1">{rowsValue}</TextInput>
           </div>
           <div className='info'>
-            <TextInput name="states" length="1">{S}</TextInput>
+            <TextInput name="states" length="1">{statesValue}</TextInput>
           </div>
           <div className='info'>
-            <TextDisplay name="possible">{P}</TextDisplay>
+            <TextDisplay name="possible">{possibleValue}</TextDisplay>
           </div>
           <div className='info'>
-            <TextDisplay name="guesses">{G}</TextDisplay>
+            <TextDisplay name="guesses">{guesses}</TextDisplay>
           </div>
           <div className='info'>
-            <TextDisplay name="incorrect">{I}</TextDisplay>
+            <TextDisplay name="incorrect">{incorrect}</TextDisplay>
           </div>
           <div className='info'>
-            <TextDisplay name="disallowed">{D}</TextDisplay>
+            <TextDisplay name="winning">{winning}</TextDisplay>
           </div>
           <div className='info'>
-            <TextDisplay name="winning">{W}</TextDisplay>
+            <TextDisplay name="disallowed">{disallowed}</TextDisplay>
           </div>
         </div>
         <div className="col_middle" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
           <div className="spacer"></div>
           <GridDisplay>
-            <div className="grid_row">
-              <div className="grid_col">{displayTextArray[0]}</div>
-              <div className="grid_col">{displayTextArray[1]}</div>
-              <div className="grid_col">{displayTextArray[2]}</div>
-              <div className="grid_col">{displayTextArray[3]}</div>
-              <div className="grid_col">{displayTextArray[4]}</div>
-            </div>
-            <div className="grid_row">
-              <div className="grid_col">{displayTextArray[5]}</div>
-              <div className="grid_col">{displayTextArray[6]}</div>
-              <div className="grid_col">{displayTextArray[7]}</div>
-              <div className="grid_col">{displayTextArray[8]}</div>
-              <div className="grid_col">{displayTextArray[9]}</div>
-            </div>
-            <div className="grid_row">
-              <div className="grid_col">q</div>
-              <div className="grid_col">w</div>
-              <div className="grid_col">e</div>
-              <div className="grid_col">r</div>
-              <div className="grid_col">t</div>
-            </div>
-            <div className="grid_row">
-              <div className="grid_col">y</div>
-              <div className="grid_col">u</div>
-              <div className="grid_col">i</div>
-              <div className="grid_col">o</div>
-              <div className="grid_col">p</div>
-            </div>
-            <div className="grid_row">
-              <div className="grid_col">z</div>
-              <div className="grid_col">x</div>
-              <div className="grid_col">x</div>
-              <div className="grid_col">c</div>
-              <div className="grid_col">v</div>
-            </div>
-            <div className="grid_row">
-              <div className="grid_col">t</div>
-              <div className="grid_col">g</div>
-              <div className="grid_col">h</div>
-              <div className="grid_col">j</div>
-              <div className="grid_col">n</div>
-            </div>
+            {gridDisplayChild()}
           </GridDisplay>
           <div className="spacer"></div>
           <div className="keyboard_parent">
@@ -198,8 +197,7 @@ const render = () => {
           </div>
         </div>
         <div className="col_side">
-          <div className='spacer'>Guess History</div>
-          <ArrayTextDisplay className='history_list'>{history}</ArrayTextDisplay>
+          <div className='spacer'>Placeholder</div>
         </div>
       </div>
     </div>
@@ -207,7 +205,7 @@ const render = () => {
 }
 
 function App() {
-  return render();
+  return Render();
 }
 
 export default App;
