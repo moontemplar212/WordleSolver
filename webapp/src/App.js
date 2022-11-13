@@ -1,6 +1,5 @@
 import './App.css';
-import React from 'react';
-import { useEffect, useState } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react';
 import { TextInput } from './components/inputs/textInput/TextWithLabelInputComponent';
 import { TextDisplay } from './components/displays/textDisplay/TextWithLabelDisplayComponent';
 import { GridDisplay } from './components/displays/gridDisplay/GridDisplayComponent';
@@ -10,12 +9,12 @@ const Render = () => {
   let [ statesValue, setStatesValue ] = useState(3);
   let [ rowsValue, setRowsValue ] = useState(6);
   let [ winning ] = useState(1);
-  let [ possibleValue, setPossible ] = useState(Math.pow(statesValue, lengthValue * rowsValue));
-  let [ incorrect, setIncorrect ] = useState(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
-  let [ guesses, setGuesses ] = useState(incorrect + winning);
-  let [ disallowed, setDisallowed ] = useState(possibleValue - guesses);
+  let [ possibleValue, setPossibleValue ] = useState(Math.pow(statesValue, lengthValue * rowsValue));
+  let [ incorrectValue, setIncorrectValue ] = useState(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
+  let [ guessesValue, setGuessesValue ] = useState(incorrectValue + winning);
+  let [ disallowedValue, setDisallowedValue ] = useState(possibleValue - guessesValue);
   let [ displayTextArray, setDisplayTextArray ] = useState([]);
-  
+
   let gridDisplayChild = (lengthValue, rowsValue) => {
     let rows = [];
     let cols = [];
@@ -33,46 +32,32 @@ const Render = () => {
     return rows;
   }
 
+  const lengthInput = <TextInput name="length" length="1" value={lengthValue} onChange={e => setLengthValue(e.target.value.replace(/[^1-9]/g, ''))}></TextInput>;
+
+  const rowsInput = <TextInput name="rows" length="1" value={rowsValue} onChange={e => setRowsValue(e.target.value.replace(/[^1-9]/g, ''))}></TextInput>;
+
+  const statesInput = <TextInput name="states" length="1" value={statesValue} onChange={e => setStatesValue(e.target.value.replace(/[^1-9]/g, ''))}></TextInput>;
+
+  const possibleDisplay = <TextDisplay name="possible" value={possibleValue}></TextDisplay>
+
+  const guessesDisplay = <TextDisplay name="guesses" value={guessesValue}></TextDisplay>
+
+  const incorrectDisplay = <TextDisplay name="incorrect" value={incorrectValue}></TextDisplay>
+
+  const disallowedDisplay = <TextDisplay name="disallowed" value={disallowedValue}></TextDisplay>
+
+  let renderCount = useRef(0);
+
   useEffect(() => {
-    gridDisplayChild = () => {
-      let rows = [];
-      let cols = [];
-      
-      for (let j = 0; j < lengthValue; j++) {
-        let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col'});
-        cols.push(col);
-      }
-      
-      for (let i = 0; i < lengthValue; i++) {
-        let row = React.createElement('div', { key: `row_${i}`, className: 'grid_row'}, cols);
-        rows.push(row);
-      }
-      
-      return rows;
-    }
-
-    return gridDisplayChild;
-  }, [lengthValue, rowsValue]);
-
+    renderCount.current = renderCount.current + 1;
+  });
   
-
-  const lengthInput = <TextInput name="length" length="1">{lengthValue}</TextInput>;
-
   useEffect(() => {
-    setPossible(Math.pow(statesValue, lengthValue * rowsValue));
-  }, [lengthValue, rowsValue, statesValue]);
-
-  useEffect(() => {
-    setIncorrect(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
-  }, [lengthValue, rowsValue, statesValue]);
-
-  useEffect(() => {
-    setGuesses(incorrect + winning);
-  }, [incorrect, winning]);
-
-  useEffect(() => {
-    setDisallowed(possibleValue - guesses);
-  }, [possibleValue, guesses]);
+    setPossibleValue(Math.pow(statesValue, lengthValue * rowsValue));
+    setGuessesValue(incorrectValue + winning);
+    setIncorrectValue(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
+    setDisallowedValue(possibleValue - guessesValue);
+  }, [lengthValue, rowsValue, statesValue, incorrectValue, winning, possibleValue, guessesValue]);
 
   const OnKeyDownHandler = (e) => {
     e.preventDefault();
@@ -124,80 +109,87 @@ const Render = () => {
             {lengthInput}
           </div>
           <div className='info'>
-            <TextInput name="rows" length="1">{rowsValue}</TextInput>
+            {rowsInput}
           </div>
           <div className='info'>
-            <TextInput name="states" length="1">{statesValue}</TextInput>
+            {statesInput}
           </div>
           <div className='info'>
-            <TextDisplay name="possible">{possibleValue}</TextDisplay>
+            {possibleDisplay}
           </div>
           <div className='info'>
-            <TextDisplay name="guesses">{guesses}</TextDisplay>
+            {guessesDisplay}
           </div>
           <div className='info'>
-            <TextDisplay name="incorrect">{incorrect}</TextDisplay>
+            {incorrectDisplay}
           </div>
           <div className='info'>
-            <TextDisplay name="winning">{winning}</TextDisplay>
+            <TextDisplay name="winning" value={winning}></TextDisplay>
           </div>
           <div className='info'>
-            <TextDisplay name="disallowed">{disallowed}</TextDisplay>
+            {disallowedDisplay}
           </div>
         </div>
         <div className="col_middle" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
-          <div className="spacer"></div>
-          <GridDisplay>
-            {gridDisplayChild()}
-          </GridDisplay>
-          <div className="spacer"></div>
-          <div className="keyboard_parent">
-            <div className="keyboard">
-              <div className="keyboard_row_1_parent">
-                <div className="keyboard_row_1">
-                  <div className="key">q</div>
-                  <div className="key">w</div>
-                  <div className="key">e</div>
-                  <div className="key">r</div>
-                  <div className="key">t</div>
-                  <div className="key">y</div>
-                  <div className="key">u</div>
-                  <div className="key">i</div>
-                  <div className="key">o</div>
-                  <div className="key">p</div>
+          <div className="grid_container">
+            <div className="spacer"></div>
+            <GridDisplay>
+              {gridDisplayChild(lengthValue, rowsValue)}
+            </GridDisplay>
+            <div className="spacer"></div>
+          </div>
+          <div className="keyboard_container">
+            <div className="keyboard_parent">
+              <div className="keyboard">
+                <div className="keyboard_row_1_parent">
+                  <div className="keyboard_row_1">
+                    <div className="key">q</div>
+                    <div className="key">w</div>
+                    <div className="key">e</div>
+                    <div className="key">r</div>
+                    <div className="key">t</div>
+                    <div className="key">y</div>
+                    <div className="key">u</div>
+                    <div className="key">i</div>
+                    <div className="key">o</div>
+                    <div className="key">p</div>
+                  </div>
                 </div>
-              </div>
-              <div className="keyboard_row_2_parent">
-                <div className="keyboard_row_2">
-                  <div className="key">a</div>
-                  <div className="key">s</div>
-                  <div className="key">d</div>
-                  <div className="key">f</div>
-                  <div className="key">g</div>
-                  <div className="key">h</div>
-                  <div className="key">j</div>
-                  <div className="key">k</div>
-                  <div className="key">l</div>
+                <div className="keyboard_row_2_parent">
+                  <div className="keyboard_row_2">
+                    <div className="key">a</div>
+                    <div className="key">s</div>
+                    <div className="key">d</div>
+                    <div className="key">f</div>
+                    <div className="key">g</div>
+                    <div className="key">h</div>
+                    <div className="key">j</div>
+                    <div className="key">k</div>
+                    <div className="key">l</div>
+                  </div>
                 </div>
-              </div>
-              <div className="keyboard_row_3_parent">
-                <div className="keyboard_row_3">
-                  <div className="key_space">⎵</div>
-                  <div className="key">z</div>
-                  <div className="key">x</div>
-                  <div className="key">c</div>
-                  <div className="key">v</div>
-                  <div className="key">b</div>
-                  <div className="key">n</div>
-                  <div className="key">m</div>
-                  <div className="key_back">⮽</div>
+                <div className="keyboard_row_3_parent">
+                  <div className="keyboard_row_3">
+                    <div className="key_space">⎵</div>
+                    <div className="key">z</div>
+                    <div className="key">x</div>
+                    <div className="key">c</div>
+                    <div className="key">v</div>
+                    <div className="key">b</div>
+                    <div className="key">n</div>
+                    <div className="key">m</div>
+                    <div className="key_back">⮽</div>
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="spacer"></div>
           </div>
         </div>
         <div className="col_side">
           <div className='spacer'>Placeholder</div>
+          <div className='spacer'></div>
+          <div>Render count is {renderCount.current}</div>
         </div>
       </div>
     </div>
