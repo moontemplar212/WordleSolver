@@ -1,8 +1,13 @@
 import './App.css';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { TextInput } from './components/inputs/textInput/TextWithLabelInputComponent';
 import { TextDisplay } from './components/displays/textDisplay/TextWithLabelDisplayComponent';
 import { GridDisplay } from './components/displays/gridDisplay/GridDisplayComponent';
+const _ = require('lodash');
+
+let dict = require("./dictionaryFive.json");
+
+const answer = dict[Math.floor(Math.random() * (dict.length - 0 + 1) + 0)];
 
 const Render = () => {
   let [ lengthValue, setLengthValue ] = useState(5);
@@ -16,13 +21,24 @@ const Render = () => {
   let [ displayTextArray, setDisplayTextArray ] = useState([]);
   let [ allowableWords, setAllowableWordsLength ] = useState(1);
   let [ enterPressed, setEnterPressed ] = useState(0);
+  let [ guess, setGuess ] = useState([]);
+  let [ dictLength, setDictLength ] = useState(dict.length);
+  let [ result, setResult ] = useState([]);
+  
+  let renderCount = useRef(0);
+
+  useEffect(() => {
+    renderCount.current = renderCount.current + 1;
+  });
+
+  useEffect(() => {
+    let resultLetters = calculateResult(guess);
+    setResult(resultLetters);
+  }, [guess, setResult]);
 
   let gridDisplayChild = (lengthValue, rowsValue, letters) => {
     let rows = [];
     let cols = [];
-
-    // https://stackoverflow.com/questions/2151084/map-a-2d-array-onto-a-1d-array
-    // 2D [width * height] = 1D [width * row + col]
 
     for (let j = 0; j < lengthValue * rowsValue; j++) {
       let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col', children: letters[j] || null});
@@ -50,12 +66,6 @@ const Render = () => {
   const incorrectDisplay = <TextDisplay name="incorrect" value={incorrectValue}></TextDisplay>
 
   const disallowedDisplay = <TextDisplay name="disallowed" value={disallowedValue}></TextDisplay>
-
-  let renderCount = useRef(0);
-
-  useEffect(() => {
-    renderCount.current = renderCount.current + 1;
-  });
   
   // useEffect(() => {
   //   return () => {
@@ -66,7 +76,67 @@ const Render = () => {
   //   }
   // }, [lengthValue, rowsValue, statesValue, incorrectValue, winning, possibleValue, guessesValue]);
 
+  function calculateResult(guess) {
+    let resultLetters = guess.map((e,i) => {
+      let returnLetter = '';
+  
+      if (!answer.includes(e)) {
+        returnLetter = 'E';
+      } 
+      let restOfAnswer = answer.substring(0, i) + answer.substring(i + 1);
+      if(restOfAnswer.includes(e)) {
+        returnLetter = 'I';
+      }
+      if(e === answer[i]) {
+        returnLetter = 'C';
+      }
+      return returnLetter;
+    });
+    
+    console.log(`RL`, resultLetters);
+    
+    return resultLetters;
+  }
 
+  function calculateRemaining(guess, resultLetters) {
+    const freq = guess.reduce((acc, e) => {
+      if(acc[e] === undefined) {
+        acc[e] = 1
+      } else {
+        ++acc[e]
+      }
+      return acc;
+    }, {});
+  
+    const res = _.zip(guess, resultLetters, guess.map((_, i) => i));
+    
+    for(let i = 0; i < res.length; i++) {
+      const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
+      if(resultLetter === "e") {
+        // remove words containing guessLetter freq 1 or guessLetter in this place freq > 1
+        dict = dict.filter(e => (freq[guessLetter] > 1) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
+      }
+      if(resultLetter === "c") {
+        // keep words current letter === guessed letter
+        dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
+        // remove words current letter !== guessed letter
+        for (let i = 0; i < dict.length; i++) {
+          const word = dict[i];
+          if(word[answerLetterIndex] !== guessLetter) {
+            dict.splice(word);
+          }
+        }
+      }
+      if(resultLetter === "i") {
+        // keep words included letter appears in remainder of word
+        dict = dict.filter(e => e.replace(e[answerLetterIndex], '').includes(guessLetter) && e);
+        // remove words included letter in this place
+        dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
+      }
+    }
+  
+    return dict;
+  }
 
   const OnKeyDownHandler = (e) => {
     e.preventDefault();
@@ -88,27 +158,26 @@ const Render = () => {
     }
 
     if (e.key === 'Backspace') {
-      removeDisplayText();
-      console.log(`DTAL`, displayTextArray.length);
-      console.log(`AW`, allowableWords);
-      if(displayTextArray.length < (allowableWords - 1) * lengthValue) {
-        setAllowableWordsLength(allowableWords - 1); 
+      if(displayTextArray.length === (allowableWords - 1) * lengthValue) {
+        // setAllowableWordsLength(allowableWords - 1);
+        return; 
       }
+      removeDisplayText();
     } else if (e.key === 'Enter') {
       // Enter only works when the length of displayTextArray % lengthValue = 0
-      if ( displayTextArray.length % lengthValue === 0) {
+      if ( displayTextArray.length === allowableWords * lengthValue && displayTextArray.length % lengthValue === 0) {
         setEnterPressed(enterPressed + 1);
-        console.log(`EPE`, enterPressed);
         // Increases the allowable input from N to N + 1 allowableWords
         if(enterPressed < 1) {
           setAllowableWordsLength(allowableWords + 1);
         }
+        // Last 5 letters of displayTextArray - the last guess
+        setGuess(displayTextArray.slice(-5));
       }
     } else if (e.key) {
       if(enterPressed >= 1) {
         setEnterPressed(0);
       }
-      console.log(`EPK`, enterPressed);
       // Checks for N * lengthValue, as a word, and increases the allowable input above
       if(displayTextArray.length >= allowableWords * lengthValue) {
         return;
@@ -228,9 +297,20 @@ const Render = () => {
           </div>
         </div>
         <div className="col_side">
-          <div className='spacer'>Placeholder</div>
-          <div className='spacer'></div>
           <div>Render count is {renderCount.current}</div>
+          <div className='spacer'></div>
+          <div className='spacer'>Answer</div>
+          <div>{answer}</div>
+          <div className='spacer'></div>
+          <div className='spacer'>Guess</div>
+          <div>{guess}</div>
+          <div className='spacer'></div>
+          <div className='spacer'>Result</div>
+          <div>{result}</div>
+          <div className='spacer'></div>
+          <div className='spacer'>Remaining Words</div>
+          <div>{dictLength}</div>
+
         </div>
       </div>
     </div>

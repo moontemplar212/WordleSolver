@@ -66,7 +66,15 @@ async function filterDict(answer, result) {
   
   const resultLetters = String(result).trim().split("");
 
-  const freq = answerLetters.reduce((acc, e) => (acc[e] = ++acc[e] || 1, acc), {})
+  const freq = answerLetters.reduce((acc, e) => {
+    if(acc[e] === undefined) {
+      acc[e] = 1
+    } else {
+      ++acc[e]
+    }
+    return acc;
+  }, {})
+  console.log(`F`, freq);
 
   const res = _.zip(answerLetters, resultLetters, answerLetters.map((_, i) => i));
   
@@ -80,11 +88,12 @@ async function filterDict(answer, result) {
       // keep words current letter === guessed letter
       dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
       // remove words current letter !== guessed letter
-      dict.forEach((word) => {
+      for (let i = 0; i < dict.length; i++) {
+        const word = dict[i];
         if(word[answerLetterIndex] !== guessLetter) {
           dict.splice(word);
         }
-      });
+      }
     }
     if(resultLetter === "i") {
       // keep words included letter appears in remainder of word
@@ -94,9 +103,9 @@ async function filterDict(answer, result) {
     }
   }
 
-  console.log(`Dict: ${dict}`);
+  // console.log(`Dict: ${dict}`);
   
-  console.log(`Dict len: ${dict.length}`);
+  // console.log(`Dict len: ${dict.length}`);
 }
 
 async function main() {
