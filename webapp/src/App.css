@@ -101,11 +101,6 @@
   outline: none;
 }
 
-.col_middle:focus-within {
-  outline: 2px solid yellow;
-  outline-offset: -2px;
-}
-
 .col_side {
   display: flex;
   flex: 1;
@@ -171,6 +166,11 @@
   width: 100%;
   height: 100%;
   justify-content: center;
+}
+
+.grid_container:focus-within {
+  outline: 2px solid yellow;
+  outline-offset: -2px;
 }
 
 .keyboard_container {

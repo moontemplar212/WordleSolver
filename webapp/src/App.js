@@ -14,18 +14,23 @@ const Render = () => {
   let [ guessesValue, setGuessesValue ] = useState(incorrectValue + winning);
   let [ disallowedValue, setDisallowedValue ] = useState(possibleValue - guessesValue);
   let [ displayTextArray, setDisplayTextArray ] = useState([]);
+  let [ allowableWords, setAllowableWordsLength ] = useState(1);
+  let [ enterPressed, setEnterPressed ] = useState(0);
 
-  let gridDisplayChild = (lengthValue, rowsValue) => {
+  let gridDisplayChild = (lengthValue, rowsValue, letters) => {
     let rows = [];
     let cols = [];
-    
-    for (let j = 0; j < lengthValue; j++) {
-      let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col'});
+
+    // https://stackoverflow.com/questions/2151084/map-a-2d-array-onto-a-1d-array
+    // 2D [width * height] = 1D [width * row + col]
+
+    for (let j = 0; j < lengthValue * rowsValue; j++) {
+      let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col', children: letters[j] || null});
       cols.push(col);
     }
-    
+
     for (let i = 0; i < rowsValue; i++) {
-      let row = React.createElement('div', { key: `row_${i}`, className: 'grid_row'}, cols);
+      let row = React.createElement('div', { key: `row_${i}`, className: 'grid_row'}, cols.slice(i*lengthValue, (i+1)*(lengthValue)));
       rows.push(row);
     }
     
@@ -52,29 +57,65 @@ const Render = () => {
     renderCount.current = renderCount.current + 1;
   });
   
-  useEffect(() => {
-    setPossibleValue(Math.pow(statesValue, lengthValue * rowsValue));
-    setGuessesValue(incorrectValue + winning);
-    setIncorrectValue(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
-    setDisallowedValue(possibleValue - guessesValue);
-  }, [lengthValue, rowsValue, statesValue, incorrectValue, winning, possibleValue, guessesValue]);
+  // useEffect(() => {
+  //   return () => {
+  //     setPossibleValue(Math.pow(statesValue, lengthValue * rowsValue));
+  //     setGuessesValue(incorrectValue + winning);
+  //     setIncorrectValue(Math.pow(Math.pow(statesValue, lengthValue) - (lengthValue + 1), rowsValue));
+  //     setDisallowedValue(possibleValue - guessesValue);
+  //   }
+  // }, [lengthValue, rowsValue, statesValue, incorrectValue, winning, possibleValue, guessesValue]);
+
+
 
   const OnKeyDownHandler = (e) => {
     e.preventDefault();
 
     console.log(`Key`, e.key);
 
-    const updateDisplayText = (newValue) => (displayTextArray.includes(undefined)) ?
-        displayTextArray[displayTextArray.indexOf(undefined)] = newValue :
+    const updateDisplayText = (newValue) => {
+      if(displayTextArray.includes(undefined)) {
+        displayTextArray[displayTextArray.indexOf(undefined)] = newValue
+      } else {
         displayTextArray.push(newValue)
+      } 
+      setDisplayTextArray([...displayTextArray]);
+    }
 
-    const removeDisplayText = () => displayTextArray.pop();
+    const removeDisplayText = () => {
+      displayTextArray.pop()
+      setDisplayTextArray([...displayTextArray]);
+    }
 
     if (e.key === 'Backspace') {
       removeDisplayText();
+      console.log(`DTAL`, displayTextArray.length);
+      console.log(`AW`, allowableWords);
+      if(displayTextArray.length < (allowableWords - 1) * lengthValue) {
+        setAllowableWordsLength(allowableWords - 1); 
+      }
     } else if (e.key === 'Enter') {
-      // TODO 
+      // Enter only works when the length of displayTextArray % lengthValue = 0
+      if ( displayTextArray.length % lengthValue === 0) {
+        setEnterPressed(enterPressed + 1);
+        console.log(`EPE`, enterPressed);
+        // Increases the allowable input from N to N + 1 allowableWords
+        if(enterPressed < 1) {
+          setAllowableWordsLength(allowableWords + 1);
+        }
+      }
     } else if (e.key) {
+      if(enterPressed >= 1) {
+        setEnterPressed(0);
+      }
+      console.log(`EPK`, enterPressed);
+      // Checks for N * lengthValue, as a word, and increases the allowable input above
+      if(displayTextArray.length >= allowableWords * lengthValue) {
+        return;
+      }
+      if(displayTextArray.length === lengthValue * rowsValue) {
+        return;
+      }
       updateDisplayText(e.key);
     }
     console.log(`DTA`, displayTextArray);
@@ -130,11 +171,11 @@ const Render = () => {
             {disallowedDisplay}
           </div>
         </div>
-        <div className="col_middle" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
-          <div className="grid_container">
+        <div className="col_middle">
+          <div className="grid_container" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
             <div className="spacer"></div>
             <GridDisplay>
-              {gridDisplayChild(lengthValue, rowsValue)}
+              {gridDisplayChild(lengthValue, rowsValue, displayTextArray)}
             </GridDisplay>
             <div className="spacer"></div>
           </div>
