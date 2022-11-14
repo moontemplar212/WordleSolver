@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { TextInput } from './components/inputs/textInput/TextWithLabelInputComponent';
 import { TextDisplay } from './components/displays/textDisplay/TextWithLabelDisplayComponent';
 import { GridDisplay } from './components/displays/gridDisplay/GridDisplayComponent';
@@ -8,6 +8,8 @@ const _ = require('lodash');
 let dict = require("./dictionaryFive.json");
 
 const answer = dict[Math.floor(Math.random() * (dict.length - 0 + 1) + 0)];
+
+const letterList = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'].map(e => e.toLowerCase());
 
 const Render = () => {
   let [ lengthValue, setLengthValue ] = useState(5);
@@ -26,22 +28,35 @@ const Render = () => {
   let [ result, setResult ] = useState([]);
   
   let renderCount = useRef(0);
+  let colRefs = useRef([]);
 
   useEffect(() => {
     renderCount.current = renderCount.current + 1;
   });
 
   useEffect(() => {
+    Array.from(new Array(lengthValue * rowsValue)).map((_, i) => colRefs.current[i] = React.createRef());
+  }, [lengthValue, rowsValue]);
+
+  useEffect(() => {
     let resultLetters = calculateResult(guess);
     setResult(resultLetters);
-  }, [guess, setResult]);
+    const colours = colourValues(resultLetters);
+    for (let i = 0; i < colours.length; i++) {
+      // This is shitty, allowableWords updates before this happens even though setGuess is called first
+      // Bug in useEffect, useRef implementation of my code, too hard for me right now :( where are you Martin 😭
+      colRefs.current[i + (lengthValue * (allowableWords - 2))].current.style.backgroundColor = colours[i];
+    }
+    let remainingWords = calculateRemaining(guess, resultLetters);
+    setDictLength(remainingWords.length);
+  }, [guess, setResult, setDictLength, lengthValue, rowsValue, allowableWords]);
 
   let gridDisplayChild = (lengthValue, rowsValue, letters) => {
     let rows = [];
     let cols = [];
 
     for (let j = 0; j < lengthValue * rowsValue; j++) {
-      let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col', children: letters[j] || null});
+      let col = React.createElement('div', { key: `col_${j}`, className: 'grid_col', children: letters[j], ref: colRefs.current[j], style: { backgroundColor: "#FFFFFF" } });
       cols.push(col);
     }
 
@@ -76,29 +91,41 @@ const Render = () => {
   //   }
   // }, [lengthValue, rowsValue, statesValue, incorrectValue, winning, possibleValue, guessesValue]);
 
+  function colourValues(resultLetters) {
+    const colourMap = {
+      'c': '#00FF00',
+      'e': '#808080',
+      'i': '#FFFF00'
+    }
+
+    const colourResult = resultLetters.map(e => colourMap[e]);
+
+    return colourResult;
+  }
+
   function calculateResult(guess) {
     let resultLetters = guess.map((e,i) => {
       let returnLetter = '';
   
       if (!answer.includes(e)) {
-        returnLetter = 'E';
+        returnLetter = 'e';
       } 
       let restOfAnswer = answer.substring(0, i) + answer.substring(i + 1);
       if(restOfAnswer.includes(e)) {
-        returnLetter = 'I';
+        returnLetter = 'i';
       }
       if(e === answer[i]) {
-        returnLetter = 'C';
+        returnLetter = 'c';
       }
       return returnLetter;
     });
-    
-    console.log(`RL`, resultLetters);
     
     return resultLetters;
   }
 
   function calculateRemaining(guess, resultLetters) {
+    let newDict = dict;
+
     const freq = guess.reduce((acc, e) => {
       if(acc[e] === undefined) {
         acc[e] = 1
@@ -114,34 +141,32 @@ const Render = () => {
       const [ guessLetter, resultLetter, answerLetterIndex ] = res[i];
       if(resultLetter === "e") {
         // remove words containing guessLetter freq 1 or guessLetter in this place freq > 1
-        dict = dict.filter(e => (freq[guessLetter] > 1) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
+        newDict = newDict.filter(e => (freq[guessLetter] > 1) ? e[answerLetterIndex] !== guessLetter : e.search(guessLetter) < 0 );
       }
       if(resultLetter === "c") {
         // keep words current letter === guessed letter
-        dict = dict.filter(e => e[answerLetterIndex] === guessLetter)
+        newDict = newDict.filter(e => e[answerLetterIndex] === guessLetter)
         // remove words current letter !== guessed letter
-        for (let i = 0; i < dict.length; i++) {
-          const word = dict[i];
+        for (let i = 0; i < newDict.length; i++) {
+          const word = newDict[i];
           if(word[answerLetterIndex] !== guessLetter) {
-            dict.splice(word);
+            newDict.splice(word);
           }
         }
       }
       if(resultLetter === "i") {
         // keep words included letter appears in remainder of word
-        dict = dict.filter(e => e.replace(e[answerLetterIndex], '').includes(guessLetter) && e);
+        newDict = newDict.filter(e => e.replace(e[answerLetterIndex], '').includes(guessLetter) && e);
         // remove words included letter in this place
-        dict = dict.filter(e => e[answerLetterIndex] !== guessLetter);
+        newDict = newDict.filter(e => e[answerLetterIndex] !== guessLetter);
       }
     }
   
-    return dict;
+    return newDict;
   }
 
   const OnKeyDownHandler = (e) => {
     e.preventDefault();
-
-    console.log(`Key`, e.key);
 
     const updateDisplayText = (newValue) => {
       if(displayTextArray.includes(undefined)) {
@@ -157,6 +182,11 @@ const Render = () => {
       setDisplayTextArray([...displayTextArray]);
     }
 
+    // No more input, you guessed the word
+    if(dictLength === 1) {
+      return;
+    }
+
     if (e.key === 'Backspace') {
       if(displayTextArray.length === (allowableWords - 1) * lengthValue) {
         // setAllowableWordsLength(allowableWords - 1);
@@ -166,15 +196,15 @@ const Render = () => {
     } else if (e.key === 'Enter') {
       // Enter only works when the length of displayTextArray % lengthValue = 0
       if ( displayTextArray.length === allowableWords * lengthValue && displayTextArray.length % lengthValue === 0) {
+        // Last 5 letters of displayTextArray - the last guess
+        setGuess(displayTextArray.slice(-5));
         setEnterPressed(enterPressed + 1);
         // Increases the allowable input from N to N + 1 allowableWords
         if(enterPressed < 1) {
           setAllowableWordsLength(allowableWords + 1);
         }
-        // Last 5 letters of displayTextArray - the last guess
-        setGuess(displayTextArray.slice(-5));
       }
-    } else if (e.key) {
+    } else if (letterList.includes(e.key.toLowerCase())) {
       if(enterPressed >= 1) {
         setEnterPressed(0);
       }
@@ -187,7 +217,6 @@ const Render = () => {
       }
       updateDisplayText(e.key);
     }
-    console.log(`DTA`, displayTextArray);
   }
 
   return <div className="app">
