@@ -168,11 +168,6 @@
   justify-content: center;
 }
 
-.grid_container:focus-within {
-  outline: 2px solid yellow;
-  outline-offset: -2px;
-}
-
 .keyboard_container {
   display: flex;
   flex-direction: column;
@@ -269,38 +264,10 @@
   background-color: white;
 }
 
-.key:hover, .key_space:hover, .key_back:hover {
+.key:hover {
   background-color: lightblue;
 }
 
-.key:active, .key_space:active, .key_back:active {
+.key:active {
   background-color: lightgreen;
-}
-
-.key_space {
-  display: flex;
-  flex-direction: column;
-  flex-flow: column;
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  outline: 1px solid black;
-  width: 80px;
-  min-height: 100%;
-  background-color: white;
-}
-
-.key_back {
-  display: flex;
-  flex-direction: column;
-  flex-flow: column;
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  outline: 1px solid black;
-  width: 80px;
-  min-height: 100%;
-  background-color: white;
 }

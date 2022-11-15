@@ -29,11 +29,33 @@ const Render = () => {
   
   let renderCount = useRef(0);
   let colRefs = useRef([]);
+  let keyRefs = useRef([]);
 
+  const updateDisplayText = (newValue) => {
+    if(displayTextArray.includes(undefined)) {
+      displayTextArray[displayTextArray.indexOf(undefined)] = newValue
+    } else {
+      displayTextArray.push(newValue)
+    } 
+    setDisplayTextArray([...displayTextArray]);
+  }
+
+  const removeDisplayText = () => {
+    displayTextArray.pop()
+    setDisplayTextArray([...displayTextArray]);
+  }
+
+  // Every render
   useEffect(() => {
     renderCount.current = renderCount.current + 1;
   });
 
+  // on initial App mount
+  useEffect(() => {
+    Array.from(new Array(letterList.length)).map((_, i) => keyRefs.current[i] = React.createRef());
+  }, []);
+
+  // on change lV, rV
   useEffect(() => {
     Array.from(new Array(lengthValue * rowsValue)).map((_, i) => colRefs.current[i] = React.createRef());
   }, [lengthValue, rowsValue]);
@@ -51,7 +73,7 @@ const Render = () => {
     setDictLength(remainingWords.length);
   }, [guess, setResult, setDictLength, lengthValue, rowsValue, allowableWords]);
 
-  let gridDisplayChild = (lengthValue, rowsValue, letters) => {
+  const gridDisplayChild = (lengthValue, rowsValue, letters) => {
     let rows = [];
     let cols = [];
 
@@ -66,6 +88,49 @@ const Render = () => {
     }
     
     return rows;
+  }
+
+  let keyRow1 = () => {
+    let keys1 = [];
+
+    for (let k = 0; k < 10; k++) {
+      let key = React.createElement('div', { id: `key_${k}`, key: `key_${k}`, className: 'key', children: letterList[k], ref: keyRefs.current[k], onClick: OnHandler});
+      keys1.push(key);
+    }
+
+    return React.createElement('div', { id: `keyRow1`, key: `keyRow1`, className: 'keyboard_row_1'}, keys1);
+  }
+
+  let keyRow2 = () => {
+    let keys2 = [];
+    const offset = 10;
+
+    for (let k = 0; k < 9; k++) {
+      let key = React.createElement('div', { id: `key_${k + offset}`, key: `key_${k + offset}`, className: 'key', children: letterList[k + offset], ref: keyRefs.current[k + offset], onClick: OnHandler});
+      keys2.push(key);
+    }
+
+    return React.createElement('div', { id: `keyRow2`, key: `keyRow2`, className: 'keyboard_row_2'}, keys2);
+  }
+
+  let keyRow3 = () => {
+    let keys3 = [];
+    const offset = 19;
+
+    const enterRef = React.createElement('div', { id: `key_enter`, key: `key_26`, className: 'key', children: '⎵', ref: keyRefs.current[19], onClick: OnHandler});
+
+    keys3.push(enterRef);
+
+    for (let k = 0; k < 7; k++) {
+      let key = React.createElement('div', { id: `key_${k + offset}`, key: `key_${k + offset}`, className: 'key', children: letterList[k + offset], ref: keyRefs.current[k + offset], onClick: OnHandler});
+      keys3.push(key);
+    }
+    
+    const backspaceRef = React.createElement('div', { id: `key_backspace`, key: `key_27`, className: 'key', children: '⮽', ref: keyRefs.current[27], onClick: OnHandler});
+
+    keys3.push(backspaceRef);
+
+    return React.createElement('div', { id: `keyRow3`, key: `keyRow3`, className: 'keyboard_row_3'}, keys3);
   }
 
   const lengthInput = <TextInput name="length" length="1" value={lengthValue} onChange={e => setLengthValue(e.target.value.replace(/[^1-9]/g, ''))}></TextInput>;
@@ -165,35 +230,21 @@ const Render = () => {
     return newDict;
   }
 
-  const OnKeyDownHandler = (e) => {
+  const OnHandler = (e) => {
     e.preventDefault();
-
-    const updateDisplayText = (newValue) => {
-      if(displayTextArray.includes(undefined)) {
-        displayTextArray[displayTextArray.indexOf(undefined)] = newValue
-      } else {
-        displayTextArray.push(newValue)
-      } 
-      setDisplayTextArray([...displayTextArray]);
-    }
-
-    const removeDisplayText = () => {
-      displayTextArray.pop()
-      setDisplayTextArray([...displayTextArray]);
-    }
 
     // No more input, you guessed the word
     if(dictLength === 1) {
       return;
     }
 
-    if (e.key === 'Backspace') {
+    if (e?.currentTarget?.id?.includes('backspace') || e?.key === 'Backspace') {
       if(displayTextArray.length === (allowableWords - 1) * lengthValue) {
         // setAllowableWordsLength(allowableWords - 1);
         return; 
       }
       removeDisplayText();
-    } else if (e.key === 'Enter') {
+    } else if (e?.currentTarget?.id?.includes('enter') || e?.key === 'Enter') {
       // Enter only works when the length of displayTextArray % lengthValue = 0
       if ( displayTextArray.length === allowableWords * lengthValue && displayTextArray.length % lengthValue === 0) {
         // Last 5 letters of displayTextArray - the last guess
@@ -204,19 +255,25 @@ const Render = () => {
           setAllowableWordsLength(allowableWords + 1);
         }
       }
-    } else if (letterList.includes(e.key.toLowerCase())) {
+    } else if (letterList.includes(e?.target?.innerText?.toLowerCase()) || letterList.includes(e?.key)) {
+      // Prevent double pressing enter on the end of a word and getting access to more rows than the next one
       if(enterPressed >= 1) {
         setEnterPressed(0);
       }
-      // Checks for N * lengthValue, as a word, and increases the allowable input above
+      // Do not allow more than one word to be entered at a time
       if(displayTextArray.length >= allowableWords * lengthValue) {
         return;
       }
+      // Do not allow more than rowsValue words to be entered
       if(displayTextArray.length === lengthValue * rowsValue) {
         return;
       }
-      updateDisplayText(e.key);
-    }
+      if (e?.key) {
+        updateDisplayText(e?.key);  
+      } else {
+        updateDisplayText(e?.target?.innerText?.toLowerCase());
+      }
+    } 
   }
 
   return <div className="app">
@@ -238,7 +295,7 @@ const Render = () => {
       </header>
       <div className="nav_parent"></div>
     </div>
-    <div className="main_content_parent">
+    <div className="main_content_parent" tabIndex={-1} onKeyDown={OnHandler}>
       <div className="main_content">
         <div className="col_side">
           <div className='spacer'>
@@ -270,7 +327,7 @@ const Render = () => {
           </div>
         </div>
         <div className="col_middle">
-          <div className="grid_container" tabIndex={-1} onKeyDown={OnKeyDownHandler}>
+          <div className="grid_container">
             <div className="spacer"></div>
             <GridDisplay>
               {gridDisplayChild(lengthValue, rowsValue, displayTextArray)}
@@ -281,44 +338,13 @@ const Render = () => {
             <div className="keyboard_parent">
               <div className="keyboard">
                 <div className="keyboard_row_1_parent">
-                  <div className="keyboard_row_1">
-                    <div className="key">q</div>
-                    <div className="key">w</div>
-                    <div className="key">e</div>
-                    <div className="key">r</div>
-                    <div className="key">t</div>
-                    <div className="key">y</div>
-                    <div className="key">u</div>
-                    <div className="key">i</div>
-                    <div className="key">o</div>
-                    <div className="key">p</div>
-                  </div>
+                  {keyRow1()}
                 </div>
                 <div className="keyboard_row_2_parent">
-                  <div className="keyboard_row_2">
-                    <div className="key">a</div>
-                    <div className="key">s</div>
-                    <div className="key">d</div>
-                    <div className="key">f</div>
-                    <div className="key">g</div>
-                    <div className="key">h</div>
-                    <div className="key">j</div>
-                    <div className="key">k</div>
-                    <div className="key">l</div>
-                  </div>
+                  {keyRow2()}
                 </div>
                 <div className="keyboard_row_3_parent">
-                  <div className="keyboard_row_3">
-                    <div className="key_space">⎵</div>
-                    <div className="key">z</div>
-                    <div className="key">x</div>
-                    <div className="key">c</div>
-                    <div className="key">v</div>
-                    <div className="key">b</div>
-                    <div className="key">n</div>
-                    <div className="key">m</div>
-                    <div className="key_back">⮽</div>
-                  </div>
+                  {keyRow3()}
                 </div>
               </div>
             </div>
