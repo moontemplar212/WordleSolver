@@ -73,16 +73,18 @@ const Render = () => {
   }, [lengthValue, rowsValue]);
 
   useEffect(() => {
-    let resultLetters = calculateResult(guess);
-    setResult(resultLetters);
-    const colours = colourValues(resultLetters);
-    for (let i = 0; i < colours.length; i++) {
-      // This is shitty, allowableWords updates before this happens even though setGuess is called first
-      // Bug in useEffect, useRef implementation of my code, too hard for me right now 😭
-      colRefs.current[i + (lengthValue * (allowableWords - 2))].current.style.backgroundColor = colours[i];
+    if (colRefs) {
+      let resultLetters = calculateResult(guess);
+      setResult(resultLetters);
+      const colours = colourValues(resultLetters);
+      for (let i = 0; i < colours.length; i++) {
+        // This is shitty, allowableWords updates before this happens even though setGuess is called first
+        // Bug in useEffect, useRef implementation of my code, too hard for me right now 😭
+        colRefs.current[i + (lengthValue * (allowableWords - 2))].current.style.backgroundColor = colours[i];
+      }
+      let remainingWords = calculateRemaining(guess, resultLetters);
+      setDictLength(remainingWords.length);
     }
-    let remainingWords = calculateRemaining(guess, resultLetters);
-    setDictLength(remainingWords.length);
   }, [guess, setResult, setDictLength, lengthValue, rowsValue, allowableWords]);
 
   const gridDisplayChild = (lengthValue, rowsValue, letters) => {
