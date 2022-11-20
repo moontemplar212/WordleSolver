@@ -7,7 +7,18 @@ const _ = require('lodash');
 
 let dict = require("./dictionaryFive.json");
 
-const answer = dict[Math.floor(Math.random() * (dict.length - 0 + 1) + 0)];
+// const answer = dict[Math.floor(Math.random() * (dict.length - 0 + 1) + 0)];
+const answer = 'abide';
+
+const answerFreq = answer.split('').reduce((acc, e) => {
+  if(acc[e] === undefined) {
+    acc[e] = 1
+  } else {
+    ++acc[e]
+  } 
+  return acc;
+}, {});
+console.log(`AF`, answerFreq);
 
 const letterList = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'].map(e => e.toLowerCase());
 
@@ -30,6 +41,7 @@ const Render = () => {
   let renderCount = useRef(0);
   let colRefs = useRef([]);
   let keyRefs = useRef([]);
+  const appRef = useRef(null);
 
   const updateDisplayText = (newValue) => {
     if(displayTextArray.includes(undefined)) {
@@ -53,6 +65,7 @@ const Render = () => {
   // on initial App mount
   useEffect(() => {
     Array.from(new Array(letterList.length)).map((_, i) => keyRefs.current[i] = React.createRef());
+    appRef.current.focus();
   }, []);
 
   // on change lV, rV
@@ -66,7 +79,7 @@ const Render = () => {
     const colours = colourValues(resultLetters);
     for (let i = 0; i < colours.length; i++) {
       // This is shitty, allowableWords updates before this happens even though setGuess is called first
-      // Bug in useEffect, useRef implementation of my code, too hard for me right now :( where are you Martin 😭
+      // Bug in useEffect, useRef implementation of my code, too hard for me right now 😭
       colRefs.current[i + (lengthValue * (allowableWords - 2))].current.style.backgroundColor = colours[i];
     }
     let remainingWords = calculateRemaining(guess, resultLetters);
@@ -169,19 +182,40 @@ const Render = () => {
   }
 
   function calculateResult(guess) {
+    const guessFreq = guess.reduce((acc, e) => {
+      if(acc[e] === undefined) {
+        acc[e] = 1
+      } else {
+        ++acc[e]
+      }
+      return acc;
+    }, {});
+    console.log(`GF`, guessFreq);
+    
+    let returnLetter = '';
+
     let resultLetters = guess.map((e,i) => {
-      let returnLetter = '';
-  
-      if (!answer.includes(e)) {
-        returnLetter = 'e';
-      } 
       let restOfAnswer = answer.substring(0, i) + answer.substring(i + 1);
-      if(restOfAnswer.includes(e)) {
-        returnLetter = 'i';
+      
+      // If guessFreq of e is greater than 1
+      // then when guessFreq[i] - answerFreq[i] = 1
+      // guess: speed: e> gF: 2
+      // answer: abide: e> aF: 1
+      // set the > aF instances of the double, triple to 'e'
+
+      if (!answer.includes(e)) {
+        returnLetter += 'e';
+      } else if(e === answer[i]) {
+        returnLetter += 'c';
+      } else if(restOfAnswer.includes(e)) {
+        // Deal with a double, triple etc
+        if (guessFreq[e] > 1 && (guessFreq[e] - answerFreq[e] === 1)) {
+          returnLetter += 'e'
+        } else {
+          returnLetter += 'i';
+        }
       }
-      if(e === answer[i]) {
-        returnLetter = 'c';
-      }
+
       return returnLetter;
     });
     
@@ -231,7 +265,7 @@ const Render = () => {
   }
 
   const OnHandler = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     // No more input, you guessed the word
     if(dictLength === 1) {
@@ -276,7 +310,7 @@ const Render = () => {
     } 
   }
 
-  return <div className="app">
+  return <div className="app" ref={appRef} tabIndex={-1} onKeyDown={OnHandler}>
     <div className="header_parent">
       <div className="nav_parent">
         <nav className="nav">
@@ -295,7 +329,7 @@ const Render = () => {
       </header>
       <div className="nav_parent"></div>
     </div>
-    <div className="main_content_parent" tabIndex={-1} onKeyDown={OnHandler}>
+    <div className="main_content_parent">
       <div className="main_content">
         <div className="col_side">
           <div className='spacer'>
