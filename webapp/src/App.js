@@ -85,7 +85,7 @@ const Render = () => {
       let remainingWords = calculateRemaining(guess, resultLetters);
       setDictLength(remainingWords.length);
     }
-  }, [guess, setResult, setDictLength, lengthValue, rowsValue, allowableWords]);
+  }, [guess, setResult, setDictLength, lengthValue, allowableWords]);
 
   const gridDisplayChild = (lengthValue, rowsValue, letters) => {
     let rows = [];
